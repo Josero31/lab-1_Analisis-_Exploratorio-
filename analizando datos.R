@@ -75,3 +75,67 @@ faltantes
 
 > file.choose()
 
+# ==============================
+# INCISO 3
+# ==============================
+
+install.packages("tidyverse")
+install.packages("nortest")
+
+library(tidyverse)
+library(nortest)
+
+quant_vars <- movies %>%
+  select(
+    budget,
+    revenue,
+    runtime,
+    popularity,
+    voteAvg,
+    voteCount,
+    actorsPopularity
+  )
+
+hist(movies$budget,
+     main = "Histograma del Presupuesto",
+     xlab = "Presupuesto",
+     col = "lightblue",
+     breaks = 30)
+
+hist(movies$revenue,
+     main = "Histograma de Ingresos",
+     xlab = "Ingresos",
+     col = "lightgreen",
+     breaks = 30)
+
+hist(movies$popularity,
+     main = "Histograma de Popularidad",
+     xlab = "Popularidad",
+     col = "orange",
+     breaks = 30)
+
+set.seed(123)
+
+lillie_budget <- lillie.test(sample(movies$budget, 500))
+lillie_revenue <- lillie.test(sample(movies$revenue, 500))
+lillie_popularity <- lillie.test(sample(movies$popularity, 500))
+
+lillie_budget
+lillie_revenue
+lillie_popularity
+
+freq_language <- table(movies$originalLanguage)
+freq_language
+
+prop.table(freq_language)
+
+freq_video <- table(movies$video)
+freq_video
+prop.table(freq_video)
+
+freq_genres <- table(movies$genres)
+freq_genres
+
+table(movies$originalLanguage)
+table(movies$video)
+table(movies$genres)

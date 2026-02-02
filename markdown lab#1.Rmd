@@ -233,6 +233,17 @@ cat("═════════════════════════
 
 ---
 
+### Ejercicio 3
+
+Con base en el análisis gráfico y estadístico realizado, se concluye que las variables cuantitativas evaluadas (presupuesto, ingresos y popularidad) no siguen una distribución normal. Los histogramas muestran una marcada asimetría positiva, caracterizada por una alta concentración de valores bajos y la presencia de colas largas hacia valores elevados, lo cual es típico en variables económicas y de impacto mediático dentro de la industria cinematográfica.
+
+La prueba de normalidad de Lilliefors confirmó estos hallazgos, ya que en los tres casos analizados se obtuvo un valor p menor a 0.05 (p-value < 2.2e-16), lo que llevó al rechazo de la hipótesis nula de normalidad. Esto indica que no es apropiado asumir normalidad para estas variables y que, en análisis posteriores, deberían considerarse métodos no paramétricos o transformaciones de los datos.
+
+En cuanto a las variables cualitativas, las tablas de frecuencia evidencian distribuciones desbalanceadas. Se observa un claro predominio del idioma inglés como idioma original de las películas, así como una presencia significativa de producciones que cuentan con videos promocionales. Respecto a los géneros, la alta diversidad de combinaciones refleja que muchas películas pertenecen a múltiples géneros simultáneamente, lo cual explica la gran cantidad de categorías observadas y sugiere una clasificación compleja del contenido cinematográfico.
+
+
+
 <center>
 *Desarrollado por Josero31 | 2026*
 </center>
+
