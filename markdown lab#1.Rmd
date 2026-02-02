@@ -1,0 +1,238 @@
+---
+title: "🎬 Análisis Exploratorio de Datos"
+subtitle: "Dataset: Movies 2026"
+author: "Roberto Navera, Andre Pivaral , Jose Sanchez"
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+output:
+  html_document:
+    theme: flatly
+    highlight: tango
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+    number_sections: true
+    code_folding: show
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center"
+)
+```
+
+<style>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1, h2, h3 {
+  color: #2c3e50;
+}
+
+.info-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.metric-card {
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.warning-box {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.success-box {
+  background: #d4edda;
+  border-left: 4px solid #28a745;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 0 8px 8px 0;
+}
+</style>
+
+---
+
+<div class="info-box">
+<h2 style="color: white; margin-top: 0;">📊 Resumen del Proyecto</h2>
+<p>Este documento presenta un análisis exploratorio completo del dataset <strong>movies_2026.csv</strong>, incluyendo estructura, dimensiones, estadísticas descriptivas y detección de valores faltantes.</p>
+</div>
+
+---
+
+# 📥 Carga de Datos
+
+```{r carga-datos}
+datos <- read.csv("C:/Users/jrss3/OneDrive/Escritorio/1ER Semestre 2026/Mineria de Datos/lab-1_Analisis-_Exploratorio-/movies_2026.csv")
+```
+
+<div class="success-box">
+✅ <strong>Datos cargados exitosamente</strong>
+</div>
+
+---
+
+# 🔍 Estructura del Dataset
+
+```{r estructura}
+str(datos)
+```
+
+## Tabla de Estructura
+
+```{r tabla-estructura}
+tabla_estructura <- data.frame(
+  Variable = names(datos),
+  Tipo_de_dato = sapply(datos, class),
+  row.names = NULL
+)
+
+knitr::kable(tabla_estructura, caption = "📋 Variables y sus Tipos de Datos")
+```
+
+---
+
+# 📐 Dimensiones del Dataset
+
+```{r dimensiones}
+dim(datos)
+```
+
+<div class="metric-card">
+<h3 style="margin-top: 0;">📏 Métricas del Dataset</h3>
+
+```{r tabla-dimensiones}
+dimensiones <- data.frame(
+  Metrica = c("📊 Total de Filas (Observaciones)", "📋 Total de Columnas (Variables)"),
+  Valor = c(dim(datos)[1], dim(datos)[2])
+)
+
+knitr::kable(dimensiones)
+```
+</div>
+
+---
+
+# 📈 Resumen Estadístico General
+
+```{r resumen}
+summary(datos)
+```
+
+## Tabla de Resumen Detallado
+
+```{r tabla-resumen}
+vars_numericas <- datos[, sapply(datos, is.numeric), drop = FALSE]
+
+if(ncol(vars_numericas) > 0) {
+  resumen_stats <- data.frame(
+    Variable = names(vars_numericas),
+    Minimo = sapply(vars_numericas, min, na.rm = TRUE),
+    Q1 = sapply(vars_numericas, quantile, probs = 0.25, na.rm = TRUE),
+    Mediana = sapply(vars_numericas, median, na.rm = TRUE),
+    Media = round(sapply(vars_numericas, mean, na.rm = TRUE), 2),
+    Q3 = sapply(vars_numericas, quantile, probs = 0.75, na.rm = TRUE),
+    Maximo = sapply(vars_numericas, max, na.rm = TRUE),
+    row.names = NULL
+  )
+  
+  knitr::kable(resumen_stats, caption = "📊 Estadísticas Descriptivas - Variables Numéricas")
+}
+```
+
+---
+
+# 👀 Vista Previa de los Datos
+
+```{r primeras-filas}
+knitr::kable(head(datos), caption = "🎬 Primeras 6 Filas del Dataset")
+```
+
+---
+
+# 🏷️ Tipos de Datos por Variable
+
+```{r tipos-datos}
+tabla_tipos <- data.frame(
+  Num = 1:ncol(datos),
+  Variable = names(datos),
+  Tipo_de_Dato = sapply(datos, class),
+  Categoria = ifelse(sapply(datos, is.numeric), "📊 Numérica", 
+                     ifelse(sapply(datos, is.character), "📝 Categórica", 
+                            ifelse(sapply(datos, is.logical), "✓ Lógica", "🔄 Otro"))),
+  row.names = NULL
+)
+
+knitr::kable(tabla_tipos, caption = "🏷️ Clasificación de Variables")
+```
+
+---
+
+# ⚠️ Valores Faltantes
+
+```{r valores-faltantes}
+faltantes <- data.frame(
+  Variable = names(datos),
+  Valores_Faltantes = colSums(is.na(datos)),
+  Porcentaje = round(colSums(is.na(datos)) / nrow(datos) * 100, 2),
+  row.names = NULL
+)
+
+faltantes$Estado <- ifelse(faltantes$Valores_Faltantes == 0, "✅ Completo", 
+                           ifelse(faltantes$Porcentaje < 5, "⚠️ Pocos NA", "❌ Revisar"))
+
+knitr::kable(faltantes, caption = "⚠️ Análisis de Valores Faltantes")
+```
+
+<div class="warning-box">
+⚠️ <strong>Nota:</strong> Revisa las variables con valores faltantes antes de realizar análisis estadísticos o modelos predictivos.
+</div>
+
+---
+
+# 📋 Resumen Final
+
+```{r resumen-final}
+cat("══════════════════════════════════════════════════════��════════\n")
+cat("                    📊 RESUMEN DEL DATASET                      \n")
+cat("═══════════════════════════════════════════════════════════════\n")
+cat("  🎬 Dataset: movies_2026.csv\n")
+cat(paste("  📊 Total de observaciones:", nrow(datos), "\n"))
+cat(paste("  📋 Total de variables:", ncol(datos), "\n"))
+cat(paste("  📈 Variables numéricas:", sum(sapply(datos, is.numeric)), "\n"))
+cat(paste("  📝 Variables categóricas:", sum(sapply(datos, is.character)), "\n"))
+cat(paste("  ✓  Variables lógicas:", sum(sapply(datos, is.logical)), "\n"))
+cat(paste("  ⚠️  Total valores faltantes:", sum(is.na(datos)), "\n"))
+cat("═══════════════════════════════════════════════════════════════\n")
+```
+
+---
+
+<div class="info-box" style="text-align: center;">
+<h3 style="color: white; margin: 0;">🎉 Análisis Exploratorio Completado</h3>
+<p style="margin-bottom: 0;">Documento generado con R Markdown</p>
+</div>
+
+---
+
+<center>
+*Desarrollado por Josero31 | 2026*
+</center>
