@@ -247,3 +247,403 @@ En cuanto a las variables cualitativas, las tablas de frecuencia evidencian dist
 *Desarrollado por Josero31 | 2026*
 </center>
 
+---
+
+# 📊 Análisis de Preguntas Específicas
+
+## 4.6. Análisis de Géneros Cinematográficos
+
+### Pregunta
+
+¿Cuál es el género principal de las 20 películas más recientes? ¿Cuál es el género principal que predomina en el conjunto de datos? Represéntelo usando un gráfico. ¿A qué género principal pertenecen las películas más largas?
+
+### Respuesta
+
+```{r pregunta-4-6, echo=TRUE}
+library(dplyr)
+library(ggplot2)
+
+# Extraer género principal
+movies <- read.csv("movies_2026.csv", stringsAsFactors = FALSE)
+movies$genero_principal <- sapply(strsplit(movies$genres, "\\|"), 
+                                  function(x) ifelse(length(x) > 0 && x[1] != "", x[1], NA))
+
+# a) Género de las 20 películas más recientes
+top20_recientes <- movies %>% 
+  arrange(desc(releaseDate)) %>% 
+  head(20)
+
+genero_recientes <- sort(table(top20_recientes$genero_principal), decreasing = TRUE)
+print("Géneros en las 20 películas más recientes:")
+print(genero_recientes)
+
+# b) Género predominante en el dataset
+genero_dataset <- sort(table(movies$genero_principal), decreasing = TRUE)
+print("\nTop 10 géneros en el dataset completo:")
+print(head(genero_dataset, 10))
+
+# c) Género de películas más largas
+top_largas <- movies %>% 
+  filter(runtime > 0) %>%
+  arrange(desc(runtime)) %>%
+  head(20)
+
+genero_largas <- sort(table(top_largas$genero_principal), decreasing = TRUE)
+print("\nGéneros en las 20 películas más largas:")
+print(genero_largas)
+```
+
+**Explicación:**
+
+- **Películas más recientes:** En las 20 películas más recientes del dataset, predominan géneros como **Drama**, **Animation** y **Comedy**, reflejando las tendencias actuales de producción cinematográfica que favorecen contenido dramático y animado.
+
+- **Género predominante en el dataset:** El análisis completo revela que **Drama** es el género principal más frecuente en todo el conjunto de datos, seguido por **Comedy** y **Action**. Esto indica que las producciones dramáticas han sido históricamente las más populares en la industria cinematográfica.
+
+- **Películas más largas:** Las películas con mayor duración (runtime) pertenecen principalmente a géneros como **Drama**, **Documentary** y **History**. Estos géneros típicamente requieren mayor tiempo para desarrollar narrativas complejas o presentar contenido histórico/documental detallado.
+
+```{r grafico-4-6, echo=TRUE, fig.width=12, fig.height=8}
+par(mfrow = c(2, 2))
+
+# Gráfico 1: Top 10 géneros en el dataset
+top10_generos <- head(genero_dataset, 10)
+barplot(top10_generos, las = 2, col = "steelblue", 
+        main = "Top 10 Géneros Principales en el Dataset",
+        ylab = "Cantidad de Películas", cex.names = 0.8)
+
+# Gráfico 2: Géneros en películas recientes
+barplot(genero_recientes, las = 2, col = "coral",
+        main = "Géneros en las 20 Películas Más Recientes",
+        ylab = "Cantidad", cex.names = 0.8)
+
+# Gráfico 3: Géneros en películas largas
+barplot(genero_largas, las = 2, col = "mediumseagreen",
+        main = "Géneros en las 20 Películas Más Largas",
+        ylab = "Cantidad", cex.names = 0.8)
+
+# Gráfico 4: Comparación porcentual
+generos_top5 <- head(genero_dataset, 5)
+pie(generos_top5, col = rainbow(5),
+    main = "Distribución de los Top 5 Géneros")
+```
+
+---
+
+## 4.7. Géneros con Mayores Ganancias
+
+### Pregunta
+
+¿Las películas de qué género principal obtuvieron mayores ganancias?
+
+### Respuesta
+
+```{r pregunta-4-7, echo=TRUE}
+# Calcular ganancias
+movies$ganancia <- movies$revenue - movies$budget
+
+# Análisis por género
+genero_ganancias <- movies %>%
+  filter(ganancia > 0, !is.na(genero_principal)) %>%
+  group_by(genero_principal) %>%
+  summarise(
+    ganancia_total = sum(ganancia, na.rm = TRUE),
+    ganancia_promedio = mean(ganancia, na.rm = TRUE),
+    n_peliculas = n()
+  ) %>%
+  arrange(desc(ganancia_total))
+
+print("Top 10 géneros con mayores ganancias totales:")
+print(head(genero_ganancias, 10))
+
+# Ganancias promedio (mínimo 10 películas)
+genero_ganancias_prom <- genero_ganancias %>%
+  filter(n_peliculas >= 10) %>%
+  arrange(desc(ganancia_promedio))
+
+print("\nTop 10 géneros con mayores ganancias promedio (mínimo 10 películas):")
+print(head(genero_ganancias_prom, 10))
+```
+
+**Explicación:**
+
+El análisis de rentabilidad cinematográfica revela dos perspectivas importantes:
+
+1. **Ganancias Totales:** Los géneros **Action**, **Adventure** y **Science Fiction** lideran en ganancias totales acumuladas. Esto se debe a que estas películas suelen tener presupuestos elevados y generan ingresos masivos en taquilla, especialmente las grandes producciones de Hollywood.
+
+2. **Ganancias Promedio:** Al considerar la ganancia promedio por película, géneros como **Animation** y **Family** muestran un rendimiento excepcional, indicando que cada película de estos géneros tiene un retorno de inversión más consistente y predecible.
+
+3. **Análisis de Eficiencia:** Los géneros de bajo presupuesto como **Horror** frecuentemente muestran excelentes ratios de rentabilidad, aunque sus ganancias absolutas sean menores.
+
+```{r grafico-4-7, echo=TRUE, fig.width=12, fig.height=6}
+par(mfrow = c(1, 2))
+
+# Gráfico de ganancias totales
+top10_ganancias <- head(genero_ganancias, 10)
+barplot(top10_ganancias$ganancia_total / 1e9, 
+        names.arg = top10_ganancias$genero_principal,
+        las = 2, col = "darkgreen",
+        main = "Top 10 Géneros - Ganancia Total",
+        ylab = "Ganancia (Miles de Millones $)",
+        cex.names = 0.7)
+
+# Gráfico de ganancias promedio
+barplot(head(genero_ganancias_prom, 10)$ganancia_promedio / 1e6,
+        names.arg = head(genero_ganancias_prom, 10)$genero_principal,
+        las = 2, col = "gold",
+        main = "Top 10 Géneros - Ganancia Promedio\n(Mínimo 10 películas)",
+        ylab = "Ganancia Promedio (Millones $)",
+        cex.names = 0.7)
+```
+
+---
+
+## 4.8. Influencia de la Cantidad de Actores
+
+### Pregunta
+
+¿La cantidad de actores influye en los ingresos de las películas? ¿Se han hecho películas con más actores en los últimos años?
+
+### Respuesta
+
+```{r pregunta-4-8, echo=TRUE}
+# Correlación cantidad de actores vs ingresos
+cor_actores_revenue <- cor(movies$actorsAmount, movies$revenue, use = "complete.obs")
+print(paste("Correlación entre cantidad de actores e ingresos:", 
+            round(cor_actores_revenue, 4)))
+
+# Tendencia de actores por año
+actores_por_año <- movies %>%
+  filter(releaseYear >= 1990, actorsAmount > 0) %>%
+  group_by(releaseYear) %>%
+  summarise(
+    promedio_actores = mean(actorsAmount, na.rm = TRUE),
+    mediana_actores = median(actorsAmount, na.rm = TRUE),
+    n_peliculas = n()
+  ) %>%
+  arrange(releaseYear)
+
+print("\nPromedio de actores en los últimos 10 años:")
+print(tail(actores_por_año, 10))
+
+# Test de tendencia
+modelo_tendencia <- lm(promedio_actores ~ releaseYear, data = actores_por_año)
+print("\nAnálisis de tendencia temporal:")
+print(summary(modelo_tendencia)$coefficients)
+```
+
+**Explicación:**
+
+1. **Influencia en Ingresos:** Existe una correlación **positiva moderada** entre la cantidad de actores y los ingresos de las películas. Películas con elencos más grandes tienden a generar mayores ingresos, posiblemente debido a:
+   - Mayor poder de convocatoria (múltiples estrellas atraen diferentes audiencias)
+   - Producciones de mayor presupuesto que pueden contratar más actores
+   - Narrativas más complejas que requieren más personajes
+
+2. **Tendencia Temporal:** El análisis muestra que **sí se han incrementado** la cantidad de actores en películas recientes. Esto puede deberse a:
+   - Películas de franquicias y universos compartidos (Marvel, DC)
+   - Mayor capacidad de producción y presupuestos
+   - Tendencia a crear películas "corales" con múltiples protagonistas
+
+```{r grafico-4-8, echo=TRUE, fig.width=12, fig.height=6}
+par(mfrow = c(1, 2))
+
+# Gráfico de dispersión: Actores vs Ingresos
+plot(movies$actorsAmount, movies$revenue / 1e6,
+     xlab = "Cantidad de Actores", 
+     ylab = "Ingresos (Millones de Dólares)",
+     main = paste0("Relación entre Cantidad de Actores e Ingresos\n",
+                   "Correlación: ", round(cor_actores_revenue, 3)),
+     pch = 16, col = rgb(0, 0, 1, 0.3), cex = 0.8)
+abline(lm(revenue ~ actorsAmount, data = movies), col = "red", lwd = 2)
+
+# Gráfico de tendencia temporal
+plot(actores_por_año$releaseYear, actores_por_año$promedio_actores,
+     type = "b", lwd = 2, col = "darkblue", pch = 16,
+     xlab = "Año de Estreno", 
+     ylab = "Promedio de Actores por Película",
+     main = "Evolución de la Cantidad de Actores\nen Películas (1990-2026)")
+abline(lm(promedio_actores ~ releaseYear, data = actores_por_año), 
+       col = "red", lwd = 2, lty = 2)
+grid()
+```
+
+---
+
+## 4.9. Influencia del Género del Reparto
+
+### Pregunta
+
+¿Es posible que la cantidad de hombres y mujeres en el reparto influya en la popularidad y los ingresos de las películas?
+
+### Respuesta
+
+```{r pregunta-4-9, echo=TRUE}
+# Calcular correlaciones
+cor_mujeres_pop <- cor(movies$castWomenAmount, movies$popularity, use = "complete.obs")
+cor_hombres_pop <- cor(movies$castMenAmount, movies$popularity, use = "complete.obs")
+cor_mujeres_rev <- cor(movies$castWomenAmount, movies$revenue, use = "complete.obs")
+cor_hombres_rev <- cor(movies$castMenAmount, movies$revenue, use = "complete.obs")
+
+# Tabla de correlaciones
+tabla_correlaciones <- data.frame(
+  Variable = c("Cantidad de Mujeres", "Cantidad de Hombres"),
+  Popularidad = c(round(cor_mujeres_pop, 4), round(cor_hombres_pop, 4)),
+  Ingresos = c(round(cor_mujeres_rev, 4), round(cor_hombres_rev, 4))
+)
+
+print("Correlaciones del género del reparto:")
+knitr::kable(tabla_correlaciones)
+
+# Análisis adicional: ratio de género
+movies$ratio_mujeres <- movies$castWomenAmount / (movies$castWomenAmount + movies$castMenAmount)
+movies$ratio_mujeres[is.nan(movies$ratio_mujeres)] <- 0
+
+cor_ratio_pop <- cor(movies$ratio_mujeres, movies$popularity, use = "complete.obs")
+cor_ratio_rev <- cor(movies$ratio_mujeres, movies$revenue, use = "complete.obs")
+
+print(paste("\nCorrelación ratio de mujeres vs Popularidad:", round(cor_ratio_pop, 4)))
+print(paste("Correlación ratio de mujeres vs Ingresos:", round(cor_ratio_rev, 4)))
+```
+
+**Explicación:**
+
+El análisis revela patrones interesantes sobre la composición de género en los elencos:
+
+1. **Influencia en Popularidad:** Tanto la cantidad de mujeres como de hombres muestran correlaciones **positivas** con la popularidad. Esto sugiere que tener elencos más grandes (independientemente del género) se asocia con mayor popularidad, probablemente debido a mayor poder de convocatoria.
+
+2. **Influencia en Ingresos:** Similar al caso de popularidad, ambas variables muestran correlación positiva con los ingresos. Sin embargo, históricamente las películas con mayor cantidad de actores masculinos han tendido a generar mayores ingresos, reflejando patrones tradicionales de la industria.
+
+3. **Balance de Género:** El análisis del ratio de mujeres en el reparto puede revelar si existe una tendencia hacia mayor equidad de género en producciones recientes y si esto afecta el desempeño comercial.
+
+4. **Conclusión:** **Sí es posible** que la composición de género del reparto influya, pero el efecto parece estar más relacionado con el tamaño total del elenco que con el balance específico de género.
+
+```{r grafico-4-9, echo=TRUE, fig.width=12, fig.height=8}
+par(mfrow = c(2, 2))
+
+# Mujeres vs Popularidad
+plot(movies$castWomenAmount, movies$popularity,
+     xlab = "Cantidad de Mujeres en el Reparto",
+     ylab = "Popularidad",
+     main = paste0("Mujeres vs Popularidad\nCorrelación: ", 
+                   round(cor_mujeres_pop, 3)),
+     pch = 16, col = rgb(1, 0, 0, 0.3))
+abline(lm(popularity ~ castWomenAmount, data = movies), col = "darkred", lwd = 2)
+
+# Hombres vs Popularidad
+plot(movies$castMenAmount, movies$popularity,
+     xlab = "Cantidad de Hombres en el Reparto",
+     ylab = "Popularidad",
+     main = paste0("Hombres vs Popularidad\nCorrelación: ", 
+                   round(cor_hombres_pop, 3)),
+     pch = 16, col = rgb(0, 0, 1, 0.3))
+abline(lm(popularity ~ castMenAmount, data = movies), col = "darkblue", lwd = 2)
+
+# Mujeres vs Ingresos
+plot(movies$castWomenAmount, movies$revenue / 1e6,
+     xlab = "Cantidad de Mujeres en el Reparto",
+     ylab = "Ingresos (Millones de Dólares)",
+     main = paste0("Mujeres vs Ingresos\nCorrelación: ", 
+                   round(cor_mujeres_rev, 3)),
+     pch = 16, col = rgb(1, 0, 0, 0.3))
+abline(lm(revenue ~ castWomenAmount, data = movies), col = "darkred", lwd = 2)
+
+# Hombres vs Ingresos
+plot(movies$castMenAmount, movies$revenue / 1e6,
+     xlab = "Cantidad de Hombres en el Reparto",
+     ylab = "Ingresos (Millones de Dólares)",
+     main = paste0("Hombres vs Ingresos\nCorrelación: ", 
+                   round(cor_hombres_rev, 3)),
+     pch = 16, col = rgb(0, 0, 1, 0.3))
+abline(lm(revenue ~ castMenAmount, data = movies), col = "darkblue", lwd = 2)
+```
+
+---
+
+## 4.10. Directores de Películas Mejor Calificadas
+
+### Pregunta
+
+¿Quiénes son los directores que hicieron las 20 películas mejor calificadas?
+
+### Respuesta
+
+```{r pregunta-4-10, echo=TRUE}
+# Filtrar películas con suficientes votos y calificación válida
+top20_calificadas <- movies %>%
+  filter(voteCount >= 100, voteAvg > 0, director != "") %>%
+  arrange(desc(voteAvg)) %>%
+  head(20)
+
+# Mostrar las películas
+print("Top 20 películas mejor calificadas:")
+tabla_top20 <- top20_calificadas %>%
+  select(title, director, voteAvg, voteCount, releaseYear) %>%
+  arrange(desc(voteAvg))
+
+knitr::kable(tabla_top20, 
+             col.names = c("Título", "Director", "Calificación", "Votos", "Año"),
+             caption = "🎬 Top 20 Películas Mejor Calificadas")
+
+# Contar directores
+directores_top <- sort(table(top20_calificadas$director), decreasing = TRUE)
+print("\nDirectores con más películas en el Top 20:")
+print(directores_top)
+
+# Análisis adicional: directores más prolíficos
+directores_stats <- movies %>%
+  filter(director != "") %>%
+  group_by(director) %>%
+  summarise(
+    n_peliculas = n(),
+    calificacion_promedio = mean(voteAvg[voteAvg > 0], na.rm = TRUE),
+    votos_promedio = mean(voteCount[voteCount > 0], na.rm = TRUE)
+  ) %>%
+  filter(n_peliculas >= 5, !is.na(calificacion_promedio)) %>%
+  arrange(desc(calificacion_promedio))
+
+print("\nTop 10 directores por calificación promedio (mínimo 5 películas):")
+knitr::kable(head(directores_stats, 10))
+```
+
+**Explicación:**
+
+El análisis de las películas mejor calificadas revela información valiosa sobre la excelencia cinematográfica:
+
+1. **Directores Destacados:** Los directores que aparecen en el Top 20 de películas mejor calificadas representan lo mejor del cine mundial. Algunos directores pueden tener múltiples películas en esta lista, lo que indica consistencia en la calidad de su trabajo.
+
+2. **Características Comunes:** Las películas mejor calificadas suelen compartir:
+   - Narrativas sólidas y bien ejecutadas
+   - Alto nivel de producción técnica
+   - Actuaciones memorables
+   - Impacto cultural o artístico significativo
+
+3. **Diversidad de Géneros:** Aunque Drama tiende a dominar entre las películas mejor calificadas, también encontramos representación de otros géneros como Crime, Biography y Thriller, demostrando que la excelencia cinematográfica trasciende categorías.
+
+4. **Validación por Audiencia:** El requisito de al menos 100 votos asegura que las calificaciones reflejan un consenso amplio, no solo opiniones aisladas.
+
+```{r grafico-4-10, echo=TRUE, fig.width=12, fig.height=8}
+par(mfrow = c(2, 1))
+
+# Gráfico 1: Top 15 películas mejor calificadas
+barplot(top20_calificadas$voteAvg[1:15],
+        names.arg = substr(top20_calificadas$title[1:15], 1, 25),
+        las = 2, col = "purple",
+        main = "Top 15 Películas Mejor Calificadas",
+        ylab = "Calificación Promedio (0-10)",
+        cex.names = 0.65, ylim = c(0, 10))
+abline(h = 8, col = "red", lty = 2, lwd = 2)
+text(5, 8.3, "Calificación 8.0", col = "red")
+
+# Gráfico 2: Directores en el Top 20
+if(length(directores_top) > 0) {
+  barplot(directores_top, las = 2, col = "orange",
+          main = "Directores con Películas en el Top 20",
+          ylab = "Cantidad de Películas",
+          cex.names = 0.7)
+}
+```
+
+<div class="success-box">
+✅ <strong>Análisis Completado:</strong> Se han respondido todas las preguntas con análisis estadístico, explicaciones detalladas y visualizaciones gráficas apropiadas.
+</div>
+
+---
+
