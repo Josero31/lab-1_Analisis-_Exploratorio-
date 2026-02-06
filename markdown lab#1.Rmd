@@ -81,7 +81,7 @@ h1, h2, h3 {
 # 📥 Carga de Datos
 
 ```{r carga-datos}
-datos <- read.csv("C:/Users/jrss3/OneDrive/Escritorio/1ER Semestre 2026/Mineria de Datos/lab-1_Analisis-_Exploratorio-/movies_2026.csv")
+datos <- read.csv("movies_2026.csv")
 ```
 
 <div class="success-box">
@@ -260,6 +260,7 @@ En cuanto a las variables cualitativas, las tablas de frecuencia evidencian dist
 ### Respuesta
 
 ```{r pregunta-4-6, echo=TRUE}
+library(lubridate)
 library(dplyr)
 library(ggplot2)
 
@@ -566,7 +567,7 @@ abline(lm(revenue ~ castMenAmount, data = movies), col = "darkblue", lwd = 2)
 ### Respuesta
 
 ```{r pregunta-4-10, echo=TRUE}
-# Filtrar películas con suficientes votos y calificación válida
+# Filtrar peliculas con suficientes votos y calificacion valida
 top20_calificadas <- movies %>%
   filter(voteCount >= 100, voteAvg > 0, director != "") %>%
   arrange(desc(voteAvg)) %>%
@@ -578,16 +579,14 @@ tabla_top20 <- top20_calificadas %>%
   select(title, director, voteAvg, voteCount, releaseYear) %>%
   arrange(desc(voteAvg))
 
-knitr::kable(tabla_top20, 
-             col.names = c("Título", "Director", "Calificación", "Votos", "Año"),
-             caption = "🎬 Top 20 Películas Mejor Calificadas")
+
 
 # Contar directores
 directores_top <- sort(table(top20_calificadas$director), decreasing = TRUE)
 print("\nDirectores con más películas en el Top 20:")
 print(directores_top)
 
-# Análisis adicional: directores más prolíficos
+# Analisis adicional: directores mas prolificos
 directores_stats <- movies %>%
   filter(director != "") %>%
   group_by(director) %>%
@@ -600,7 +599,7 @@ directores_stats <- movies %>%
   arrange(desc(calificacion_promedio))
 
 print("\nTop 10 directores por calificación promedio (mínimo 5 películas):")
-knitr::kable(head(directores_stats, 10))
+knitr::kable(head(directores_stats, 10)) 
 ```
 
 **Explicación:**
@@ -639,6 +638,130 @@ if(length(directores_top) > 0) {
           ylab = "Cantidad de Películas",
           cex.names = 0.7)
 }
+```
+
+## 4.11 ¿Cómo se correlacionan los presupuestos con los ingresos?
+Los presupuestos tienen una corelación significativa con los ingresos
+```{r}
+# Correlación
+cor_budget_revenue <- cor(datos$budget, datos$revenue, use = "complete.obs")
+cor_budget_revenue
+ggplot(datos, aes(x = budget)) +
+  geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
+  labs(title = "Distribución del Presupuesto", x = "Presupuesto", y = "Frecuencia")
+
+ggplot(datos, aes(x = revenue)) +
+  geom_histogram(bins = 30, fill = "darkgreen", alpha = 0.7) +
+  labs(title = "Distribución de Ingresos", x = "Ingresos", y = "Frecuencia")
+ggplot(datos, aes(x = budget, y = revenue)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = "Presupuesto vs Ingresos",
+    x = "Presupuesto",
+    y = "Ingresos"
+  )
+
+```
+
+## 4.12 ¿Se asocian ciertos meses con mejores ingresos?
+Algunos meses tienden a tener mejores ingresos que otros, en Particular Junio, Mayo y Julio
+```{r}
+datos <- datos %>%
+  mutate(
+    releaseDate = as.Date(releaseDate),
+    releaseMonth = month(releaseDate, label = TRUE)
+  )
+
+ggplot(datos, aes(x = releaseMonth, y = revenue)) +
+  geom_boxplot(fill = "orange", alpha = 0.7) +
+  labs(
+    title = "Ingresos según mes de lanzamiento",
+    x = "Mes",
+    y = "Ingresos"
+  )
+
+```
+
+## 4.13 Mejores meses y cantidad promedio de películas
+Los meses de Diciembre, Noviembre y Enero lanzan la mayor cantidad de películas en promedio, pero los meses más rentables en promedio son Junio, Mayo y Julio
+```{r}
+resumen_mensual <- datos %>%
+  group_by(releaseMonth) %>%
+  summarise(
+    ingreso_promedio = mean(revenue, na.rm = TRUE),
+    peliculas_lanzadas = n()
+  )
+
+resumen_mensual
+ggplot(resumen_mensual, aes(x = releaseMonth, y = ingreso_promedio)) +
+  geom_col(fill = "purple", alpha = 0.7) +
+  labs(
+    title = "Ingreso promedio por mes de lanzamiento",
+    x = "Mes",
+    y = "Ingreso promedio"
+  )
+
+```
+
+## 4.14 ¿Cómo se correlacionan las calificaciones con los ingresos?
+Las calificaciones tienen una leve correlación significativa con los ingresos
+```{r}
+cor_votos_ingresos <- cor(datos$voteAvg, datos$revenue, use = "complete.obs")
+cor_votos_ingresos
+ggplot(datos, aes(x = voteAvg, y = revenue)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(
+    title = "Calificación promedio vs Ingresos",
+    x = "Calificación promedio",
+    y = "Ingresos"
+  )
+
+```
+
+## 4.15 Videos promocionales y páginas oficiales
+La presencia de páginas promocionales se relaciona mejor con un alto ingreso promedio comparado con los videos promocionales
+```{r}
+datos %>%
+  group_by(video) %>%
+  summarise(
+    ingreso_promedio = mean(revenue, na.rm = TRUE),
+    total_peliculas = n()
+  )
+ggplot(datos, aes(x = video, y = revenue)) +
+  geom_boxplot(fill = "cyan", alpha = 0.7) +
+  labs(
+    title = "Ingresos según presencia de videos promocionales",
+    x = "Video promocional",
+    y = "Ingresos"
+  )
+datos %>%
+  mutate(tiene_homepage = ifelse(homePage == "", "No", "Sí")) %>%
+  group_by(tiene_homepage) %>%
+  summarise(ingreso_promedio = mean(revenue, na.rm = TRUE))
+
+```
+
+## 4.16 Popularidad del elenco vs taquilla
+La popularidad promedio del elenco parece tener poca relación con el éxito de la taquilla
+```{r}
+datos$actorsPopularityMean <- sapply(datos$actorsPopularity, function(x) {
+  if (is.na(x) | x == "") return(NA)
+  mean(as.numeric(unlist(strsplit(x, "\\|"))), na.rm = TRUE)
+})
+
+cor(datos$actorsPopularityMean, datos$revenue, use = "complete.obs")
+ggplot(datos, aes(x = actorsPopularityMean, y = revenue)) +
+  geom_point(alpha = 0.6, color = "#8e44ad") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = "Popularidad del Elenco vs Ingresos",
+    x = "Popularidad del Elenco",
+    y = "Ingresos"
+  ) +
+  theme_minimal()
+
 ```
 
 <div class="success-box">
