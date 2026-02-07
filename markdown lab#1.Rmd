@@ -72,25 +72,25 @@ h1, h2, h3 {
 ---
 
 <div class="info-box">
-<h2 style="color: white; margin-top: 0;">📊 Resumen del Proyecto</h2>
-<p>Este documento presenta un análisis exploratorio completo del dataset <strong>movies_2026.csv</strong>, incluyendo estructura, dimensiones, estadísticas descriptivas y detección de valores faltantes.</p>
+<h2 style="color: white; margin-top: 0;">Resumen del Proyecto</h2>
+<p>Este documento presenta un analisis exploratorio completo del dataset <strong>movies_2026.csv</strong>, incluyendo estructura, dimensiones, estadisticas descriptivas y deteccion de valores faltantes.</p>
 </div>
 
 ---
 
-# 📥 Carga de Datos
+# Carga de Datos
 
 ```{r carga-datos}
-datos <- read.csv("movies_2026.csv")
+datos <- read.csv("movies_2026.csv", fileEncoding = "UTF-8")
 ```
 
 <div class="success-box">
-✅ <strong>Datos cargados exitosamente</strong>
+<strong>Datos cargados exitosamente</strong>
 </div>
 
 ---
 
-# 🔍 Estructura del Dataset
+# Estructura del Dataset
 
 ```{r estructura}
 str(datos)
@@ -105,23 +105,23 @@ tabla_estructura <- data.frame(
   row.names = NULL
 )
 
-knitr::kable(tabla_estructura, caption = "📋 Variables y sus Tipos de Datos")
+knitr::kable(tabla_estructura, caption = "Variables y sus Tipos de Datos")
 ```
 
 ---
 
-# 📐 Dimensiones del Dataset
+# Dimensiones del Dataset
 
 ```{r dimensiones}
 dim(datos)
 ```
 
 <div class="metric-card">
-<h3 style="margin-top: 0;">📏 Métricas del Dataset</h3>
+<h3 style="margin-top: 0;">Metricas del Dataset</h3>
 
 ```{r tabla-dimensiones}
 dimensiones <- data.frame(
-  Metrica = c("📊 Total de Filas (Observaciones)", "📋 Total de Columnas (Variables)"),
+  Metrica = c("Total de Filas (Observaciones)", "Total de Columnas (Variables)"),
   Valor = c(dim(datos)[1], dim(datos)[2])
 )
 
@@ -131,7 +131,7 @@ knitr::kable(dimensiones)
 
 ---
 
-# 📈 Resumen Estadístico General
+# Resumen Estadistico General
 
 ```{r resumen}
 summary(datos)
@@ -154,39 +154,39 @@ if(ncol(vars_numericas) > 0) {
     row.names = NULL
   )
   
-  knitr::kable(resumen_stats, caption = "📊 Estadísticas Descriptivas - Variables Numéricas")
+  knitr::kable(resumen_stats, caption = "Estadisticas Descriptivas - Variables Numericas")
 }
 ```
 
 ---
 
-# 👀 Vista Previa de los Datos
+# Vista Previa de los Datos
 
 ```{r primeras-filas}
-knitr::kable(head(datos), caption = "🎬 Primeras 6 Filas del Dataset")
+knitr::kable(head(datos), caption = "Primeras 6 Filas del Dataset")
 ```
 
 ---
 
-# 🏷️ Tipos de Datos por Variable
+# Tipos de Datos por Variable
 
 ```{r tipos-datos}
 tabla_tipos <- data.frame(
   Num = 1:ncol(datos),
   Variable = names(datos),
   Tipo_de_Dato = sapply(datos, class),
-  Categoria = ifelse(sapply(datos, is.numeric), "📊 Numérica", 
-                     ifelse(sapply(datos, is.character), "📝 Categórica", 
-                            ifelse(sapply(datos, is.logical), "✓ Lógica", "🔄 Otro"))),
+  Categoria = ifelse(sapply(datos, is.numeric), "Numerica", 
+                     ifelse(sapply(datos, is.character), "Categorica", 
+                            ifelse(sapply(datos, is.logical), "Logica", "Otro"))),
   row.names = NULL
 )
 
-knitr::kable(tabla_tipos, caption = "🏷️ Clasificación de Variables")
+knitr::kable(tabla_tipos, caption = "Clasificacion de Variables")
 ```
 
 ---
 
-# ⚠️ Valores Faltantes
+# Valores Faltantes
 
 ```{r valores-faltantes}
 faltantes <- data.frame(
@@ -196,38 +196,38 @@ faltantes <- data.frame(
   row.names = NULL
 )
 
-faltantes$Estado <- ifelse(faltantes$Valores_Faltantes == 0, "✅ Completo", 
-                           ifelse(faltantes$Porcentaje < 5, "⚠️ Pocos NA", "❌ Revisar"))
+faltantes$Estado <- ifelse(faltantes$Valores_Faltantes == 0, "Completo", 
+                           ifelse(faltantes$Porcentaje < 5, "Pocos NA", "Revisar"))
 
-knitr::kable(faltantes, caption = "⚠️ Análisis de Valores Faltantes")
+knitr::kable(faltantes, caption = "Analisis de Valores Faltantes")
 ```
 
 <div class="warning-box">
-⚠️ <strong>Nota:</strong> Revisa las variables con valores faltantes antes de realizar análisis estadísticos o modelos predictivos.
+<strong>Nota:</strong> Revisa las variables con valores faltantes antes de realizar analisis estadisticos o modelos predictivos.
 </div>
 
 ---
 
-# 📋 Resumen Final
+# Resumen Final
 
 ```{r resumen-final}
-cat("══════════════════════════════════════════════════════��════════\n")
-cat("                    📊 RESUMEN DEL DATASET                      \n")
-cat("═══════════════════════════════════════════════════════════════\n")
-cat("  🎬 Dataset: movies_2026.csv\n")
-cat(paste("  📊 Total de observaciones:", nrow(datos), "\n"))
-cat(paste("  📋 Total de variables:", ncol(datos), "\n"))
-cat(paste("  📈 Variables numéricas:", sum(sapply(datos, is.numeric)), "\n"))
-cat(paste("  📝 Variables categóricas:", sum(sapply(datos, is.character)), "\n"))
-cat(paste("  ✓  Variables lógicas:", sum(sapply(datos, is.logical)), "\n"))
-cat(paste("  ⚠️  Total valores faltantes:", sum(is.na(datos)), "\n"))
-cat("═══════════════════════════════════════════════════════════════\n")
+cat("===============================================================\n")
+cat("                    RESUMEN DEL DATASET                        \n")
+cat("===============================================================\n")
+cat("  Dataset: movies_2026.csv\n")
+cat(paste("  Total de observaciones:", nrow(datos), "\n"))
+cat(paste("  Total de variables:", ncol(datos), "\n"))
+cat(paste("  Variables numericas:", sum(sapply(datos, is.numeric)), "\n"))
+cat(paste("  Variables categoricas:", sum(sapply(datos, is.character)), "\n"))
+cat(paste("  Variables logicas:", sum(sapply(datos, is.logical)), "\n"))
+cat(paste("  Total valores faltantes:", sum(is.na(datos)), "\n"))
+cat("===============================================================\n")
 ```
 
 ---
 
 <div class="info-box" style="text-align: center;">
-<h3 style="color: white; margin: 0;">🎉 Análisis Exploratorio Completado</h3>
+<h3 style="color: white; margin: 0;">Analisis Exploratorio Completado</h3>
 <p style="margin-bottom: 0;">Documento generado con R Markdown</p>
 </div>
 
@@ -235,11 +235,11 @@ cat("═════════════════════════
 
 ### Ejercicio 3
 
-Con base en el análisis gráfico y estadístico realizado, se concluye que las variables cuantitativas evaluadas (presupuesto, ingresos y popularidad) no siguen una distribución normal. Los histogramas muestran una marcada asimetría positiva, caracterizada por una alta concentración de valores bajos y la presencia de colas largas hacia valores elevados, lo cual es típico en variables económicas y de impacto mediático dentro de la industria cinematográfica.
+Con base en el analisis grafico y estadistico realizado, se concluye que las variables cuantitativas evaluadas (presupuesto, ingresos y popularidad) no siguen una distribucion normal. Los histogramas muestran una marcada asimetria positiva, caracterizada por una alta concentracion de valores bajos y la presencia de colas largas hacia valores elevados, lo cual es tipico en variables economicas y de impacto mediatico dentro de la industria cinematografica.
 
-La prueba de normalidad de Lilliefors confirmó estos hallazgos, ya que en los tres casos analizados se obtuvo un valor p menor a 0.05 (p-value < 2.2e-16), lo que llevó al rechazo de la hipótesis nula de normalidad. Esto indica que no es apropiado asumir normalidad para estas variables y que, en análisis posteriores, deberían considerarse métodos no paramétricos o transformaciones de los datos.
+La prueba de normalidad de Lilliefors confirmo estos hallazgos, ya que en los tres casos analizados se obtuvo un valor p menor a 0.05 (p-value < 2.2e-16), lo que llevo al rechazo de la hipotesis nula de normalidad. Esto indica que no es apropiado asumir normalidad para estas variables y que, en analisis posteriores, deberian considerarse metodos no parametricos o transformaciones de los datos.
 
-En cuanto a las variables cualitativas, las tablas de frecuencia evidencian distribuciones desbalanceadas. Se observa un claro predominio del idioma inglés como idioma original de las películas, así como una presencia significativa de producciones que cuentan con videos promocionales. Respecto a los géneros, la alta diversidad de combinaciones refleja que muchas películas pertenecen a múltiples géneros simultáneamente, lo cual explica la gran cantidad de categorías observadas y sugiere una clasificación compleja del contenido cinematográfico.
+En cuanto a las variables cualitativas, las tablas de frecuencia evidencian distribuciones desbalanceadas. Se observa un claro predominio del idioma ingles como idioma original de las peliculas, asi como una presencia significativa de producciones que cuentan con videos promocionales. Respecto a los generos, la alta diversidad de combinaciones refleja que muchas peliculas pertenecen a multiples generos simultaneamente, lo cual explica la gran cantidad de categorias observadas y sugiere una clasificacion compleja del contenido cinematografico.
 
 
 
@@ -249,13 +249,13 @@ En cuanto a las variables cualitativas, las tablas de frecuencia evidencian dist
 
 ---
 
-# 📊 Análisis de Preguntas Específicas
+# Analisis de Preguntas Especificas
 
-## 4.6. Análisis de Géneros Cinematográficos
+## 4.6. Analisis de Generos Cinematograficos
 
 ### Pregunta
 
-¿Cuál es el género principal de las 20 películas más recientes? ¿Cuál es el género principal que predomina en el conjunto de datos? Represéntelo usando un gráfico. ¿A qué género principal pertenecen las películas más largas?
+Cual es el genero principal de las 20 peliculas mas recientes? Cual es el genero principal que predomina en el conjunto de datos? Representelo usando un grafico. A que genero principal pertenecen las peliculas mas largas?
 
 ### Respuesta
 
@@ -264,76 +264,79 @@ library(lubridate)
 library(dplyr)
 library(ggplot2)
 
-# Extraer género principal
-movies <- read.csv("movies_2026.csv", stringsAsFactors = FALSE)
+# Extraer genero principal
+movies <- read.csv("movies_2026.csv", stringsAsFactors = FALSE, fileEncoding = "UTF-8")
 movies$genero_principal <- sapply(strsplit(movies$genres, "\\|"), 
                                   function(x) ifelse(length(x) > 0 && x[1] != "", x[1], NA))
 
-# a) Género de las 20 películas más recientes
+# a) Genero de las 20 peliculas mas recientes
 top20_recientes <- movies %>% 
   arrange(desc(releaseDate)) %>% 
   head(20)
 
 genero_recientes <- sort(table(top20_recientes$genero_principal), decreasing = TRUE)
-print("Géneros en las 20 películas más recientes:")
+print("Generos en las 20 peliculas mas recientes:")
 print(genero_recientes)
 
-# b) Género predominante en el dataset
+# b) Genero predominante en el dataset
 genero_dataset <- sort(table(movies$genero_principal), decreasing = TRUE)
-print("\nTop 10 géneros en el dataset completo:")
+print("Top 10 generos en el dataset completo:")
 print(head(genero_dataset, 10))
 
-# c) Género de películas más largas
+# c) Genero de peliculas mas largas
 top_largas <- movies %>% 
   filter(runtime > 0) %>%
   arrange(desc(runtime)) %>%
   head(20)
 
 genero_largas <- sort(table(top_largas$genero_principal), decreasing = TRUE)
-print("\nGéneros en las 20 películas más largas:")
+print("Generos en las 20 peliculas mas largas:")
 print(genero_largas)
 ```
 
-**Explicación:**
+**Explicacion:**
 
-- **Películas más recientes:** En las 20 películas más recientes del dataset, predominan géneros como **Drama**, **Animation** y **Comedy**, reflejando las tendencias actuales de producción cinematográfica que favorecen contenido dramático y animado.
+- **Peliculas mas recientes:** En las 20 peliculas mas recientes del dataset, predominan generos como **Drama**, **Animation** y **Comedy**, reflejando las tendencias actuales de produccion cinematografica que favorecen contenido dramatico y animado.
 
-- **Género predominante en el dataset:** El análisis completo revela que **Drama** es el género principal más frecuente en todo el conjunto de datos, seguido por **Comedy** y **Action**. Esto indica que las producciones dramáticas han sido históricamente las más populares en la industria cinematográfica.
+- **Genero predominante en el dataset:** El analisis completo revela que **Drama** es el genero principal mas frecuente en todo el conjunto de datos, seguido por **Comedy** y **Action**. Esto indica que las producciones dramaticas han sido historicamente las mas populares en la industria cinematografica.
 
-- **Películas más largas:** Las películas con mayor duración (runtime) pertenecen principalmente a géneros como **Drama**, **Documentary** y **History**. Estos géneros típicamente requieren mayor tiempo para desarrollar narrativas complejas o presentar contenido histórico/documental detallado.
+- **Peliculas mas largas:** Las peliculas con mayor duracion (runtime) pertenecen principalmente a generos como **Drama**, **Documentary** y **History**. Estos generos tipicamente requieren mayor tiempo para desarrollar narrativas complejas o presentar contenido historico/documental detallado.
 
-```{r grafico-4-6, echo=TRUE, fig.width=12, fig.height=8}
-par(mfrow = c(2, 2))
+```{r grafico-4-6, echo=TRUE, fig.width=12, fig.height=10, fig.show="hold", results="hide"}
+layout(matrix(c(1,2,3,4), nrow = 2, byrow = TRUE))
 
-# Gráfico 1: Top 10 géneros en el dataset
+# Grafico 1: Top 10 generos en el dataset
 top10_generos <- head(genero_dataset, 10)
-barplot(top10_generos, las = 2, col = "steelblue", 
-        main = "Top 10 Géneros Principales en el Dataset",
-        ylab = "Cantidad de Películas", cex.names = 0.8)
+barplot(top10_generos,
+        las = 2, col = "steelblue", 
+        main = "Top 10 Generos Principales en el Dataset",
+        ylab = "Cantidad de Peliculas", cex.names = 0.8)
 
-# Gráfico 2: Géneros en películas recientes
-barplot(genero_recientes, las = 2, col = "coral",
-        main = "Géneros en las 20 Películas Más Recientes",
+# Grafico 2: Generos en peliculas recientes
+barplot(genero_recientes,
+        las = 2, col = "coral",
+        main = "Generos en las 20 Peliculas Mas Recientes",
         ylab = "Cantidad", cex.names = 0.8)
 
-# Gráfico 3: Géneros en películas largas
-barplot(genero_largas, las = 2, col = "mediumseagreen",
-        main = "Géneros en las 20 Películas Más Largas",
+# Grafico 3: Generos en peliculas largas
+barplot(genero_largas,
+        las = 2, col = "mediumseagreen",
+        main = "Generos en las 20 Peliculas Mas Largas",
         ylab = "Cantidad", cex.names = 0.8)
 
-# Gráfico 4: Comparación porcentual
+# Grafico 4: Comparacion porcentual
 generos_top5 <- head(genero_dataset, 5)
 pie(generos_top5, col = rainbow(5),
-    main = "Distribución de los Top 5 Géneros")
+    main = "Distribucion de los Top 5 Generos")
 ```
 
 ---
 
-## 4.7. Géneros con Mayores Ganancias
+## 4.7. Generos con Mayores Ganancias
 
 ### Pregunta
 
-¿Las películas de qué género principal obtuvieron mayores ganancias?
+Las peliculas de que genero principal obtuvieron mayores ganancias?
 
 ### Respuesta
 
@@ -341,7 +344,7 @@ pie(generos_top5, col = rainbow(5),
 # Calcular ganancias
 movies$ganancia <- movies$revenue - movies$budget
 
-# Análisis por género
+# Analisis por genero
 genero_ganancias <- movies %>%
   filter(ganancia > 0, !is.na(genero_principal)) %>%
   group_by(genero_principal) %>%
@@ -352,45 +355,46 @@ genero_ganancias <- movies %>%
   ) %>%
   arrange(desc(ganancia_total))
 
-print("Top 10 géneros con mayores ganancias totales:")
+print("Top 10 generos con mayores ganancias totales:")
 print(head(genero_ganancias, 10))
 
-# Ganancias promedio (mínimo 10 películas)
+# Ganancias promedio (minimo 10 peliculas)
 genero_ganancias_prom <- genero_ganancias %>%
   filter(n_peliculas >= 10) %>%
   arrange(desc(ganancia_promedio))
 
-print("\nTop 10 géneros con mayores ganancias promedio (mínimo 10 películas):")
+print("Top 10 generos con mayores ganancias promedio (minimo 10 peliculas):")
 print(head(genero_ganancias_prom, 10))
 ```
 
-**Explicación:**
+**Explicacion:**
 
-El análisis de rentabilidad cinematográfica revela dos perspectivas importantes:
+El analisis de rentabilidad cinematografica revela dos perspectivas importantes:
 
-1. **Ganancias Totales:** Los géneros **Action**, **Adventure** y **Science Fiction** lideran en ganancias totales acumuladas. Esto se debe a que estas películas suelen tener presupuestos elevados y generan ingresos masivos en taquilla, especialmente las grandes producciones de Hollywood.
+1. **Ganancias Totales:** Los generos **Action**, **Adventure** y **Science Fiction** lideran en ganancias totales acumuladas. Esto se debe a que estas peliculas suelen tener presupuestos elevados y generan ingresos masivos en taquilla, especialmente las grandes producciones de Hollywood.
 
-2. **Ganancias Promedio:** Al considerar la ganancia promedio por película, géneros como **Animation** y **Family** muestran un rendimiento excepcional, indicando que cada película de estos géneros tiene un retorno de inversión más consistente y predecible.
+2. **Ganancias Promedio:** Al considerar la ganancia promedio por pelicula, generos como **Animation** y **Family** muestran un rendimiento excepcional, indicando que cada pelicula de estos generos tiene un retorno de inversion mas consistente y predecible.
 
-3. **Análisis de Eficiencia:** Los géneros de bajo presupuesto como **Horror** frecuentemente muestran excelentes ratios de rentabilidad, aunque sus ganancias absolutas sean menores.
+3. **Analisis de Eficiencia:** Los generos de bajo presupuesto como **Horror** frecuentemente muestran excelentes ratios de rentabilidad, aunque sus ganancias absolutas sean menores.
 
-```{r grafico-4-7, echo=TRUE, fig.width=12, fig.height=6}
-par(mfrow = c(1, 2))
+```{r grafico-4-7, echo=TRUE, fig.width=12, fig.height=6, fig.show="hold", results="hide"}
+layout(matrix(c(1,2), nrow = 1))
 
-# Gráfico de ganancias totales
+# Grafico de ganancias totales
 top10_ganancias <- head(genero_ganancias, 10)
 barplot(top10_ganancias$ganancia_total / 1e9, 
         names.arg = top10_ganancias$genero_principal,
         las = 2, col = "darkgreen",
-        main = "Top 10 Géneros - Ganancia Total",
+        main = "Top 10 Generos - Ganancia Total",
         ylab = "Ganancia (Miles de Millones $)",
         cex.names = 0.7)
 
-# Gráfico de ganancias promedio
-barplot(head(genero_ganancias_prom, 10)$ganancia_promedio / 1e6,
-        names.arg = head(genero_ganancias_prom, 10)$genero_principal,
+# Grafico de ganancias promedio
+top10_gan_prom <- head(genero_ganancias_prom, 10)
+barplot(top10_gan_prom$ganancia_promedio / 1e6,
+        names.arg = top10_gan_prom$genero_principal,
         las = 2, col = "gold",
-        main = "Top 10 Géneros - Ganancia Promedio\n(Mínimo 10 películas)",
+        main = "Top 10 Generos - Ganancia Promedio\n(Minimo 10 peliculas)",
         ylab = "Ganancia Promedio (Millones $)",
         cex.names = 0.7)
 ```
@@ -401,18 +405,18 @@ barplot(head(genero_ganancias_prom, 10)$ganancia_promedio / 1e6,
 
 ### Pregunta
 
-¿La cantidad de actores influye en los ingresos de las películas? ¿Se han hecho películas con más actores en los últimos años?
+La cantidad de actores influye en los ingresos de las peliculas? Se han hecho peliculas con mas actores en los ultimos anios?
 
 ### Respuesta
 
 ```{r pregunta-4-8, echo=TRUE}
-# Correlación cantidad de actores vs ingresos
+# Correlacion cantidad de actores vs ingresos
 cor_actores_revenue <- cor(movies$actorsAmount, movies$revenue, use = "complete.obs")
-print(paste("Correlación entre cantidad de actores e ingresos:", 
+print(paste("Correlacion entre cantidad de actores e ingresos:", 
             round(cor_actores_revenue, 4)))
 
-# Tendencia de actores por año
-actores_por_año <- movies %>%
+# Tendencia de actores por anio
+actores_por_anio <- movies %>%
   filter(releaseYear >= 1990, actorsAmount > 0) %>%
   group_by(releaseYear) %>%
   summarise(
@@ -422,57 +426,56 @@ actores_por_año <- movies %>%
   ) %>%
   arrange(releaseYear)
 
-print("\nPromedio de actores en los últimos 10 años:")
-print(tail(actores_por_año, 10))
+print("Promedio de actores en los ultimos 10 anios:")
+print(tail(actores_por_anio, 10))
 
 # Test de tendencia
-modelo_tendencia <- lm(promedio_actores ~ releaseYear, data = actores_por_año)
-print("\nAnálisis de tendencia temporal:")
+modelo_tendencia <- lm(promedio_actores ~ releaseYear, data = actores_por_anio)
+print("Analisis de tendencia temporal:")
 print(summary(modelo_tendencia)$coefficients)
 ```
 
-**Explicación:**
+**Explicacion:**
 
-1. **Influencia en Ingresos:** Existe una correlación **positiva moderada** entre la cantidad de actores y los ingresos de las películas. Películas con elencos más grandes tienden a generar mayores ingresos, posiblemente debido a:
-   - Mayor poder de convocatoria (múltiples estrellas atraen diferentes audiencias)
-   - Producciones de mayor presupuesto que pueden contratar más actores
-   - Narrativas más complejas que requieren más personajes
+1. **Influencia en Ingresos:** Existe una correlacion **positiva moderada** entre la cantidad de actores y los ingresos de las peliculas. Peliculas con elencos mas grandes tienden a generar mayores ingresos, posiblemente debido a:
+   - Mayor poder de convocatoria (multiples estrellas atraen diferentes audiencias)
+   - Producciones de mayor presupuesto que pueden contratar mas actores
+   - Narrativas mas complejas que requieren mas personajes
 
-2. **Tendencia Temporal:** El análisis muestra que **sí se han incrementado** la cantidad de actores en películas recientes. Esto puede deberse a:
-   - Películas de franquicias y universos compartidos (Marvel, DC)
-   - Mayor capacidad de producción y presupuestos
-   - Tendencia a crear películas "corales" con múltiples protagonistas
+2. **Tendencia Temporal:** El analisis muestra que **si se han incrementado** la cantidad de actores en peliculas recientes. Esto puede deberse a:
+   - Peliculas de franquicias y universos compartidos (Marvel, DC)
+   - Mayor capacidad de produccion y presupuestos
+   - Tendencia a crear peliculas "corales" con multiples protagonistas
 
-```{r grafico-4-8, echo=TRUE, fig.width=12, fig.height=6}
-par(mfrow = c(1, 2))
+```{r grafico-4-8, echo=TRUE, fig.width=12, fig.height=6, fig.show="hold", results="hide"}
+layout(matrix(c(1,2), nrow = 1))
 
-# Gráfico de dispersión: Actores vs Ingresos
+# Grafico de dispersion: Actores vs Ingresos
 plot(movies$actorsAmount, movies$revenue / 1e6,
      xlab = "Cantidad de Actores", 
-     ylab = "Ingresos (Millones de Dólares)",
-     main = paste0("Relación entre Cantidad de Actores e Ingresos\n",
-                   "Correlación: ", round(cor_actores_revenue, 3)),
+     ylab = "Ingresos (Millones de Dolares)",
+     main = paste0("Relacion Actores vs Ingresos\nCorrelacion: ", round(cor_actores_revenue, 3)),
      pch = 16, col = rgb(0, 0, 1, 0.3), cex = 0.8)
 abline(lm(revenue ~ actorsAmount, data = movies), col = "red", lwd = 2)
 
-# Gráfico de tendencia temporal
-plot(actores_por_año$releaseYear, actores_por_año$promedio_actores,
+# Grafico de tendencia temporal
+plot(actores_por_anio$releaseYear, actores_por_anio$promedio_actores,
      type = "b", lwd = 2, col = "darkblue", pch = 16,
-     xlab = "Año de Estreno", 
-     ylab = "Promedio de Actores por Película",
-     main = "Evolución de la Cantidad de Actores\nen Películas (1990-2026)")
-abline(lm(promedio_actores ~ releaseYear, data = actores_por_año), 
+     xlab = "Anio de Estreno", 
+     ylab = "Promedio de Actores por Pelicula",
+     main = "Evolucion de la Cantidad de Actores\nen Peliculas (1990-2026)")
+abline(lm(promedio_actores ~ releaseYear, data = actores_por_anio), 
        col = "red", lwd = 2, lty = 2)
 grid()
 ```
 
 ---
 
-## 4.9. Influencia del Género del Reparto
+## 4.9. Influencia del Genero del Reparto
 
 ### Pregunta
 
-¿Es posible que la cantidad de hombres y mujeres en el reparto influya en la popularidad y los ingresos de las películas?
+Es posible que la cantidad de hombres y mujeres en el reparto influya en la popularidad y los ingresos de las peliculas?
 
 ### Respuesta
 
@@ -490,79 +493,75 @@ tabla_correlaciones <- data.frame(
   Ingresos = c(round(cor_mujeres_rev, 4), round(cor_hombres_rev, 4))
 )
 
-print("Correlaciones del género del reparto:")
+print("Correlaciones del genero del reparto:")
 knitr::kable(tabla_correlaciones)
 
-# Análisis adicional: ratio de género
+# Analisis adicional: ratio de genero
 movies$ratio_mujeres <- movies$castWomenAmount / (movies$castWomenAmount + movies$castMenAmount)
 movies$ratio_mujeres[is.nan(movies$ratio_mujeres)] <- 0
 
 cor_ratio_pop <- cor(movies$ratio_mujeres, movies$popularity, use = "complete.obs")
 cor_ratio_rev <- cor(movies$ratio_mujeres, movies$revenue, use = "complete.obs")
 
-print(paste("\nCorrelación ratio de mujeres vs Popularidad:", round(cor_ratio_pop, 4)))
-print(paste("Correlación ratio de mujeres vs Ingresos:", round(cor_ratio_rev, 4)))
+print(paste("Correlacion ratio de mujeres vs Popularidad:", round(cor_ratio_pop, 4)))
+print(paste("Correlacion ratio de mujeres vs Ingresos:", round(cor_ratio_rev, 4)))
 ```
 
-**Explicación:**
+**Explicacion:**
 
-El análisis revela patrones interesantes sobre la composición de género en los elencos:
+El analisis revela patrones interesantes sobre la composicion de genero en los elencos:
 
-1. **Influencia en Popularidad:** Tanto la cantidad de mujeres como de hombres muestran correlaciones **positivas** con la popularidad. Esto sugiere que tener elencos más grandes (independientemente del género) se asocia con mayor popularidad, probablemente debido a mayor poder de convocatoria.
+1. **Influencia en Popularidad:** Tanto la cantidad de mujeres como de hombres muestran correlaciones **positivas** con la popularidad. Esto sugiere que tener elencos mas grandes (independientemente del genero) se asocia con mayor popularidad, probablemente debido a mayor poder de convocatoria.
 
-2. **Influencia en Ingresos:** Similar al caso de popularidad, ambas variables muestran correlación positiva con los ingresos. Sin embargo, históricamente las películas con mayor cantidad de actores masculinos han tendido a generar mayores ingresos, reflejando patrones tradicionales de la industria.
+2. **Influencia en Ingresos:** Similar al caso de popularidad, ambas variables muestran correlacion positiva con los ingresos. Sin embargo, historicamente las peliculas con mayor cantidad de actores masculinos han tendido a generar mayores ingresos, reflejando patrones tradicionales de la industria.
 
-3. **Balance de Género:** El análisis del ratio de mujeres en el reparto puede revelar si existe una tendencia hacia mayor equidad de género en producciones recientes y si esto afecta el desempeño comercial.
+3. **Balance de Genero:** El analisis del ratio de mujeres en el reparto puede revelar si existe una tendencia hacia mayor equidad de genero en producciones recientes y si esto afecta el desempenio comercial.
 
-4. **Conclusión:** **Sí es posible** que la composición de género del reparto influya, pero el efecto parece estar más relacionado con el tamaño total del elenco que con el balance específico de género.
+4. **Conclusion:** **Si es posible** que la composicion de genero del reparto influya, pero el efecto parece estar mas relacionado con el tamanio total del elenco que con el balance especifico de genero.
 
-```{r grafico-4-9, echo=TRUE, fig.width=12, fig.height=8}
-par(mfrow = c(2, 2))
+```{r grafico-4-9, echo=TRUE, fig.width=12, fig.height=10, fig.show="hold", results="hide"}
+layout(matrix(c(1,2,3,4), nrow = 2, byrow = TRUE))
 
 # Mujeres vs Popularidad
 plot(movies$castWomenAmount, movies$popularity,
-     xlab = "Cantidad de Mujeres en el Reparto",
+     xlab = "Mujeres en el Reparto",
      ylab = "Popularidad",
-     main = paste0("Mujeres vs Popularidad\nCorrelación: ", 
-                   round(cor_mujeres_pop, 3)),
+     main = paste0("Mujeres vs Popularidad\nCorrelacion: ", round(cor_mujeres_pop, 3)),
      pch = 16, col = rgb(1, 0, 0, 0.3))
 abline(lm(popularity ~ castWomenAmount, data = movies), col = "darkred", lwd = 2)
 
 # Hombres vs Popularidad
 plot(movies$castMenAmount, movies$popularity,
-     xlab = "Cantidad de Hombres en el Reparto",
+     xlab = "Hombres en el Reparto",
      ylab = "Popularidad",
-     main = paste0("Hombres vs Popularidad\nCorrelación: ", 
-                   round(cor_hombres_pop, 3)),
+     main = paste0("Hombres vs Popularidad\nCorrelacion: ", round(cor_hombres_pop, 3)),
      pch = 16, col = rgb(0, 0, 1, 0.3))
 abline(lm(popularity ~ castMenAmount, data = movies), col = "darkblue", lwd = 2)
 
 # Mujeres vs Ingresos
 plot(movies$castWomenAmount, movies$revenue / 1e6,
-     xlab = "Cantidad de Mujeres en el Reparto",
-     ylab = "Ingresos (Millones de Dólares)",
-     main = paste0("Mujeres vs Ingresos\nCorrelación: ", 
-                   round(cor_mujeres_rev, 3)),
+     xlab = "Mujeres en el Reparto",
+     ylab = "Ingresos (Millones de Dolares)",
+     main = paste0("Mujeres vs Ingresos\nCorrelacion: ", round(cor_mujeres_rev, 3)),
      pch = 16, col = rgb(1, 0, 0, 0.3))
 abline(lm(revenue ~ castWomenAmount, data = movies), col = "darkred", lwd = 2)
 
 # Hombres vs Ingresos
 plot(movies$castMenAmount, movies$revenue / 1e6,
-     xlab = "Cantidad de Hombres en el Reparto",
-     ylab = "Ingresos (Millones de Dólares)",
-     main = paste0("Hombres vs Ingresos\nCorrelación: ", 
-                   round(cor_hombres_rev, 3)),
+     xlab = "Hombres en el Reparto",
+     ylab = "Ingresos (Millones de Dolares)",
+     main = paste0("Hombres vs Ingresos\nCorrelacion: ", round(cor_hombres_rev, 3)),
      pch = 16, col = rgb(0, 0, 1, 0.3))
 abline(lm(revenue ~ castMenAmount, data = movies), col = "darkblue", lwd = 2)
 ```
 
 ---
 
-## 4.10. Directores de Películas Mejor Calificadas
+## 4.10. Directores de Peliculas Mejor Calificadas
 
 ### Pregunta
 
-¿Quiénes son los directores que hicieron las 20 películas mejor calificadas?
+Quienes son los directores que hicieron las 20 peliculas mejor calificadas?
 
 ### Respuesta
 
@@ -573,17 +572,15 @@ top20_calificadas <- movies %>%
   arrange(desc(voteAvg)) %>%
   head(20)
 
-# Mostrar las películas
-print("Top 20 películas mejor calificadas:")
+# Mostrar las peliculas
+print("Top 20 peliculas mejor calificadas:")
 tabla_top20 <- top20_calificadas %>%
   select(title, director, voteAvg, voteCount, releaseYear) %>%
   arrange(desc(voteAvg))
 
-
-
 # Contar directores
 directores_top <- sort(table(top20_calificadas$director), decreasing = TRUE)
-print("\nDirectores con más películas en el Top 20:")
+print("Directores con mas peliculas en el Top 20:")
 print(directores_top)
 
 # Analisis adicional: directores mas prolificos
@@ -598,63 +595,76 @@ directores_stats <- movies %>%
   filter(n_peliculas >= 5, !is.na(calificacion_promedio)) %>%
   arrange(desc(calificacion_promedio))
 
-print("\nTop 10 directores por calificación promedio (mínimo 5 películas):")
+print("Top 10 directores por calificacion promedio (minimo 5 peliculas):")
 knitr::kable(head(directores_stats, 10)) 
 ```
 
-**Explicación:**
+**Explicacion:**
 
-El análisis de las películas mejor calificadas revela información valiosa sobre la excelencia cinematográfica:
+El analisis de las peliculas mejor calificadas revela informacion valiosa sobre la excelencia cinematografica:
 
-1. **Directores Destacados:** Los directores que aparecen en el Top 20 de películas mejor calificadas representan lo mejor del cine mundial. Algunos directores pueden tener múltiples películas en esta lista, lo que indica consistencia en la calidad de su trabajo.
+1. **Directores Destacados:** Los directores que aparecen en el Top 20 de peliculas mejor calificadas representan lo mejor del cine mundial. Algunos directores pueden tener multiples peliculas en esta lista, lo que indica consistencia en la calidad de su trabajo.
 
-2. **Características Comunes:** Las películas mejor calificadas suelen compartir:
-   - Narrativas sólidas y bien ejecutadas
-   - Alto nivel de producción técnica
+2. **Caracteristicas Comunes:** Las peliculas mejor calificadas suelen compartir:
+   - Narrativas solidas y bien ejecutadas
+   - Alto nivel de produccion tecnica
    - Actuaciones memorables
-   - Impacto cultural o artístico significativo
+   - Impacto cultural o artistico significativo
 
-3. **Diversidad de Géneros:** Aunque Drama tiende a dominar entre las películas mejor calificadas, también encontramos representación de otros géneros como Crime, Biography y Thriller, demostrando que la excelencia cinematográfica trasciende categorías.
+3. **Diversidad de Generos:** Aunque Drama tiende a dominar entre las peliculas mejor calificadas, tambien encontramos representacion de otros generos como Crime, Biography y Thriller, demostrando que la excelencia cinematografica trasciende categorias.
 
-4. **Validación por Audiencia:** El requisito de al menos 100 votos asegura que las calificaciones reflejan un consenso amplio, no solo opiniones aisladas.
+4. **Validacion por Audiencia:** El requisito de al menos 100 votos asegura que las calificaciones reflejan un consenso amplio, no solo opiniones aisladas.
 
-```{r grafico-4-10, echo=TRUE, fig.width=12, fig.height=8}
-par(mfrow = c(2, 1))
+```{r grafico-4-10, echo=TRUE, fig.width=12, fig.height=10, fig.show="hold", results="hide"}
+layout(matrix(c(1,2), nrow = 2))
 
-# Gráfico 1: Top 15 películas mejor calificadas
+# Limpiar titulos para evitar error de multibyte string
+titulos_limpios <- iconv(top20_calificadas$title[1:15], from = "", to = "UTF-8", sub = "?")
+titulos_limpios <- substr(titulos_limpios, 1, 25)
+titulos_limpios <- gsub("[^\x20-\x7E]", "?", titulos_limpios)
+
+# Grafico 1: Top 15 peliculas mejor calificadas
 barplot(top20_calificadas$voteAvg[1:15],
-        names.arg = substr(top20_calificadas$title[1:15], 1, 25),
+        names.arg = titulos_limpios,
         las = 2, col = "purple",
-        main = "Top 15 Películas Mejor Calificadas",
-        ylab = "Calificación Promedio (0-10)",
+        main = "Top 15 Peliculas Mejor Calificadas",
+        ylab = "Calificacion Promedio (0-10)",
         cex.names = 0.65, ylim = c(0, 10))
 abline(h = 8, col = "red", lty = 2, lwd = 2)
-text(5, 8.3, "Calificación 8.0", col = "red")
+text(5, 8.3, "Calificacion 8.0", col = "red")
 
-# Gráfico 2: Directores en el Top 20
+# Grafico 2: Directores en el Top 20
 if(length(directores_top) > 0) {
-  barplot(directores_top, las = 2, col = "orange",
-          main = "Directores con Películas en el Top 20",
-          ylab = "Cantidad de Películas",
+  nombres_directores <- iconv(names(directores_top), from = "", to = "UTF-8", sub = "?")
+  nombres_directores <- gsub("[^\x20-\x7E]", "?", nombres_directores)
+  barplot(directores_top, names.arg = nombres_directores,
+          las = 2, col = "orange",
+          main = "Directores con Peliculas en el Top 20",
+          ylab = "Cantidad de Peliculas",
           cex.names = 0.7)
 }
 ```
 
+<<<<<<< Updated upstream
 ## 4.11 ¿Cómo se correlacionan los presupuestos con los ingresos?
 Los presupuestos tienen una corelación significativa con los ingresos
 
 Explicacion: Tanto la correlacion calculada como la gráfica muestran una tendencia clara entre el presupuesto y la rentabilidad de una pelicula
+=======
+## 4.11 Como se correlacionan los presupuestos con los ingresos?
+Los presupuestos tienen una corelacion significativa con los ingresos
+>>>>>>> Stashed changes
 ```{r}
-# Correlación
+# Correlacion
 cor_budget_revenue <- cor(datos$budget, datos$revenue, use = "complete.obs")
 cor_budget_revenue
 ggplot(datos, aes(x = budget)) +
   geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
-  labs(title = "Distribución del Presupuesto", x = "Presupuesto", y = "Frecuencia")
+  labs(title = "Distribucion del Presupuesto", x = "Presupuesto", y = "Frecuencia")
 
 ggplot(datos, aes(x = revenue)) +
   geom_histogram(bins = 30, fill = "darkgreen", alpha = 0.7) +
-  labs(title = "Distribución de Ingresos", x = "Ingresos", y = "Frecuencia")
+  labs(title = "Distribucion de Ingresos", x = "Ingresos", y = "Frecuencia")
 ggplot(datos, aes(x = budget, y = revenue)) +
   geom_point(alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
@@ -666,7 +676,7 @@ ggplot(datos, aes(x = budget, y = revenue)) +
 
 ```
 
-## 4.12 ¿Se asocian ciertos meses con mejores ingresos?
+## 4.12 Se asocian ciertos meses con mejores ingresos?
 Algunos meses tienden a tener mejores ingresos que otros, en Particular Junio, Mayo y Julio
 
 Explicación: Las graficas de cajas estan un poco más arriba del resto durante estos meses y tienen promedios mas altos
@@ -680,17 +690,22 @@ datos <- datos %>%
 ggplot(datos, aes(x = releaseMonth, y = revenue)) +
   geom_boxplot(fill = "orange", alpha = 0.7) +
   labs(
-    title = "Ingresos según mes de lanzamiento",
+    title = "Ingresos segun mes de lanzamiento",
     x = "Mes",
     y = "Ingresos"
   )
 
 ```
 
+<<<<<<< Updated upstream
 ## 4.13 Mejores meses y cantidad promedio de películas
 Los meses de Diciembre, Noviembre y Enero lanzan la mayor cantidad de películas en promedio, pero los meses más rentables en promedio son Junio, Mayo y Julio
 
 Explicación: las graficas de barras muestran una diferencia significativa en estos meses, tanto en la cantidad y en la rentabilidad
+=======
+## 4.13 Mejores meses y cantidad promedio de peliculas
+Los meses de Diciembre, Noviembre y Enero lanzan la mayor cantidad de peliculas en promedio, pero los meses mas rentables en promedio son Junio, Mayo y Julio
+>>>>>>> Stashed changes
 ```{r}
 resumen_mensual <- datos %>%
   group_by(releaseMonth) %>%
@@ -710,10 +725,15 @@ ggplot(resumen_mensual, aes(x = releaseMonth, y = ingreso_promedio)) +
 
 ```
 
+<<<<<<< Updated upstream
 ## 4.14 ¿Cómo se correlacionan las calificaciones con los ingresos?
 Las calificaciones parecen tener una leve correlación con los ingresos
 
 Explicación: la regresión y la distribución muestran un pequeño sesgo a favor del ingreso cuando hay mejores calificaciones, aunque no es tan significativa
+=======
+## 4.14 Como se correlacionan las calificaciones con los ingresos?
+Las calificaciones tienen una leve correlacion significativa con los ingresos
+>>>>>>> Stashed changes
 ```{r}
 cor_votos_ingresos <- cor(datos$voteAvg, datos$revenue, use = "complete.obs")
 cor_votos_ingresos
@@ -721,17 +741,22 @@ ggplot(datos, aes(x = voteAvg, y = revenue)) +
   geom_point(alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   labs(
-    title = "Calificación promedio vs Ingresos",
-    x = "Calificación promedio",
+    title = "Calificacion promedio vs Ingresos",
+    x = "Calificacion promedio",
     y = "Ingresos"
   )
 
 ```
 
+<<<<<<< Updated upstream
 ## 4.15 Videos promocionales y páginas oficiales
 La presencia de páginas promocionales se relaciona mejor con un alto ingreso promedio comparado con los videos promocionales
 
 Explicacion: Las proporciones de los ingresos en comparación favorecen las páginas por encima de los videos promocionales
+=======
+## 4.15 Videos promocionales y paginas oficiales
+La presencia de paginas promocionales se relaciona mejor con un alto ingreso promedio comparado con los videos promocionales
+>>>>>>> Stashed changes
 ```{r}
 datos %>%
   group_by(video) %>%
@@ -742,21 +767,25 @@ datos %>%
 ggplot(datos, aes(x = video, y = revenue)) +
   geom_boxplot(fill = "cyan", alpha = 0.7) +
   labs(
-    title = "Ingresos según presencia de videos promocionales",
+    title = "Ingresos segun presencia de videos promocionales",
     x = "Video promocional",
     y = "Ingresos"
   )
 datos %>%
-  mutate(tiene_homepage = ifelse(homePage == "", "No", "Sí")) %>%
+  mutate(tiene_homepage = ifelse(homePage == "", "No", "Si")) %>%
   group_by(tiene_homepage) %>%
   summarise(ingreso_promedio = mean(revenue, na.rm = TRUE))
 
 ```
 
 ## 4.16 Popularidad del elenco vs taquilla
+<<<<<<< Updated upstream
 La popularidad promedio del elenco parece tener poca relación con el éxito de la taquilla
 
 Explicación: Ni la correlación ni la gráfica muestran una tendencia clara en favor del ingreso a medida que la popularidad promedio del elenco aumenta
+=======
+La popularidad promedio del elenco parece tener poca relacion con el exito de la taquilla
+>>>>>>> Stashed changes
 ```{r}
 datos$actorsPopularityMean <- sapply(datos$actorsPopularity, function(x) {
   if (is.na(x) | x == "") return(NA)
@@ -957,8 +986,13 @@ ggplot(movies, aes(x = tiene_homepage, y = revenue)) +
 ```
 
 <div class="success-box">
-✅ <strong>Análisis Completado:</strong> Se han respondido todas las preguntas con análisis estadístico, explicaciones detalladas y visualizaciones gráficas apropiadas.
+<strong>Analisis Completado:</strong> Se han respondido todas las preguntas con analisis estadistico, explicaciones detalladas y visualizaciones graficas apropiadas.
 </div>
 
 ---
 
+
+
+<center>
+*Desarrollado por Josero31 | 2026*
+</center>
