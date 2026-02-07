@@ -231,135 +231,25 @@ cat("===============================================================\n")
 <p style="margin-bottom: 0;">Documento generado con R Markdown</p>
 </div>
 
-# Ejercicio 3  
+---
 
-### Variables cuantitativas
+### Ejercicio 3
 
-Se analizaron las variables **budget, revenue, runtime, popularity y voteAvg** mediante histogramas, boxplots y la prueba de Lilliefors.
+Con base en el analisis grafico y estadistico realizado, se concluye que las variables cuantitativas evaluadas (presupuesto, ingresos y popularidad) no siguen una distribucion normal. Los histogramas muestran una marcada asimetria positiva, caracterizada por una alta concentracion de valores bajos y la presencia de colas largas hacia valores elevados, lo cual es tipico en variables economicas y de impacto mediatico dentro de la industria cinematografica.
 
-```{r}
-library(tidyverse)
-library(nortest)
+La prueba de normalidad de Lilliefors confirmo estos hallazgos, ya que en los tres casos analizados se obtuvo un valor p menor a 0.05 (p-value < 2.2e-16), lo que llevo al rechazo de la hipotesis nula de normalidad. Esto indica que no es apropiado asumir normalidad para estas variables y que, en analisis posteriores, deberian considerarse metodos no parametricos o transformaciones de los datos.
 
-datos <- read.csv("Data.csv")
+En cuanto a las variables cualitativas, las tablas de frecuencia evidencian distribuciones desbalanceadas. Se observa un claro predominio del idioma ingles como idioma original de las peliculas, asi como una presencia significativa de producciones que cuentan con videos promocionales. Respecto a los generos, la alta diversidad de combinaciones refleja que muchas peliculas pertenecen a multiples generos simultaneamente, lo cual explica la gran cantidad de categorias observadas y sugiere una clasificacion compleja del contenido cinematografico.
 
-vars_cuant <- c("budget", "revenue", "runtime", "popularity", "voteAvg")
 
-for (var in vars_cuant) {
-  hist(datos[[var]], main = paste("Histograma de", var),
-       xlab = var, col = "skyblue", border = "white")
-  
-  boxplot(datos[[var]], main = paste("Boxplot de", var),
-          horizontal = TRUE, col = "tomato")
-  
-  lillie.test(na.omit(datos[[var]]))
-}
-```
 
-**Conclusión:**  
-Ninguna de las variables cuantitativas sigue una distribución normal (*p* < 0.05 en todos los casos).  
-Las variables **budget, revenue y popularity** presentan fuerte asimetría positiva y múltiples valores atípicos, mientras que **runtime** y **voteAvg** muestran menor dispersión, pero también se alejan de la normalidad.
+<center>
+*Desarrollado por Josero31 | 2026*
+</center>
 
 ---
 
-### Variables cualitativas
-
-Se generaron tablas de frecuencia para **originalLanguage** y **releaseYear**.
-
-```{r}
-vars_cual <- c("originalLanguage", "releaseYear")
-
-frecuencias <- lapply(vars_cual, function(v) {
-  datos %>%
-    count(.data[[v]]) %>%
-    arrange(desc(n))
-})
-
-names(frecuencias) <- vars_cual
-frecuencias
-```
-
-**Conclusión:**  
-El idioma **inglés** domina ampliamente el conjunto de datos.  
-La mayor concentración de películas corresponde a los años **2025 y 2026**, evidenciando un sesgo hacia producciones recientes.
-
----
-
-# Ejercicio 4  
-
-### 4.1 Películas con mayor presupuesto
-
-```{r}
-top_10_budget <- datos[order(-datos$budget), c("title", "budget")][1:10, ]
-top_10_budget
-```
-
-Las películas con mayor presupuesto pertenecen principalmente a **grandes franquicias**, lo que refleja altas inversiones en producciones de alto impacto comercial.
-
----
-
-### 4.2 Películas con mayores ingresos
-
-```{r}
-top_10_revenue <- datos[order(-datos$revenue), c("title", "revenue")][1:10, ]
-top_10_revenue
-```
-
-Los mayores ingresos corresponden a películas icónicas como *Avatar* y *Avengers*, confirmando que el éxito comercial se concentra en pocas producciones.
-
----
-
-### 4.3 Película con más votos
-
-```{r}
-mas_votos <- datos[which.max(datos$voteCount), c("title", "voteCount")]
-mas_votos
-```
-
-La película con más votos es **Inception**, indicando alta popularidad y alcance entre los usuarios.
-
----
-
-### 4.4 Película con menos votos
-
-```{r}
-menos_votos <- datos %>% 
-  filter(voteCount > 0) %>% 
-  arrange(voteCount) %>% 
-  select(title, voteCount) %>% 
-  head(1)
-
-menos_votos
-```
-
-La película con menos votos presenta mínima visibilidad, más que una evaluación negativa representativa.
-
----
-
-### 4.5 Películas por año
-
-```{r}
-peliculas_por_anio <- datos %>%
-  count(releaseYear) %>%
-  arrange(desc(n))
-
-peliculas_por_anio
-```
-
-```{r}
-ggplot(peliculas_por_anio, aes(x = factor(releaseYear), y = n)) +
-  geom_bar(stat = "identity") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(
-    title = "Cantidad de películas por año",
-    x = "Año",
-    y = "Número de películas"
-  )
-```
-
-El año con mayor número de películas registradas es **2025**, seguido por **2026**, lo que confirma una mayor producción cinematográfica en años recientes.
-
----
+# Analisis de Preguntas Especificas
 
 ## 4.6. Analisis de Generos Cinematograficos
 
