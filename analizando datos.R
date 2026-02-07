@@ -73,69 +73,97 @@ faltantes <- data.frame(
 
 faltantes
 
-> file.choose()
+# ================================
+# EJERCICIO 3
+# ================================
 
-# ==============================
-# INCISO 3
-# ==============================
-
-install.packages("tidyverse")
-install.packages("nortest")
-
+# Librerías
 library(tidyverse)
 library(nortest)
 
-quant_vars <- movies %>%
-  select(
-    budget,
-    revenue,
-    runtime,
-    popularity,
-    voteAvg,
-    voteCount,
-    actorsPopularity
-  )
+# Datos
+datos <- read.csv("C:/Users/andre/Downloads/Data.csv")
 
-hist(movies$budget,
-     main = "Histograma del Presupuesto",
-     xlab = "Presupuesto",
-     col = "lightblue",
-     breaks = 30)
+# -------------------------------
+# VARIABLES CUANTITATIVAS
+# -------------------------------
 
-hist(movies$revenue,
-     main = "Histograma de Ingresos",
-     xlab = "Ingresos",
-     col = "lightgreen",
-     breaks = 30)
+vars_cuant <- c("budget", "revenue", "runtime", "popularity", "voteAvg")
 
-hist(movies$popularity,
-     main = "Histograma de Popularidad",
-     xlab = "Popularidad",
-     col = "orange",
-     breaks = 30)
+for (var in vars_cuant) {
+  # Histograma
+  hist(datos[[var]], main = paste("Histograma de", var), 
+       xlab = var, col = "skyblue", border = "white")
+  
+  # Boxplot
+  boxplot(datos[[var]], main = paste("Boxplot de", var), 
+          horizontal = TRUE, col = "tomato")
+  
+  # Prueba Lilliefors
+  print(paste("Prueba de Lilliefors para", var))
+  print(lillie.test(na.omit(datos[[var]])))
+}
 
-set.seed(123)
+# -------------------------------
+# VARIABLES CUALITATIVAS
+# -------------------------------
 
-lillie_budget <- lillie.test(sample(movies$budget, 500))
-lillie_revenue <- lillie.test(sample(movies$revenue, 500))
-lillie_popularity <- lillie.test(sample(movies$popularity, 500))
+vars_cual <- c("originalLanguage", "releaseYear")
 
-lillie_budget
-lillie_revenue
-lillie_popularity
+frecuencias <- lapply(vars_cual, function(v) {
+  datos %>%
+    count(.data[[v]]) %>%
+    arrange(desc(n))
+})
 
-freq_language <- table(movies$originalLanguage)
-freq_language
+names(frecuencias) <- vars_cual
+frecuencias
 
-prop.table(freq_language)
+# ================================
+# EJERCICIO 4
+# ================================
 
-freq_video <- table(movies$video)
-freq_video
-prop.table(freq_video)
+# -------------------------------
+# EJERCICIO 4.1
+# -------------------------------
 
-freq_genres <- table(movies$genres)
-freq_genres
+cat("\n--------- Top 10 Presupuesto ---------\n")
+top_10_budget <- datos[order(-datos$budget), c("title", "budget")][1:10, ]
+print(top_10_budget)
 
-table(movies$originalLanguage)
-table(movies$video)
-table(movies$genres)
+# -------------------------------
+# EJERCICIO 4.2
+# -------------------------------
+
+cat("\n--------- Top 10 Ingresos ---------\n")
+top_10_revenue <- datos[order(-datos$revenue), c("title", "revenue")][1:10, ]
+print(top_10_revenue)
+
+# -------------------------------
+# EJERCICIO 4.3
+# -------------------------------
+
+cat("\n--------- Película con Más Votos ---------\n")
+mas_votos <- datos[which.max(datos$voteCount), c("title", "voteCount")]
+print(mas_votos)
+
+# -------------------------------
+# EJERCICIO 4.4
+# -------------------------------
+
+cat("\n--------- Película con Menos Votos ---------\n")
+menos_votos <- datos %>% 
+  filter(voteCount > 0) %>% 
+  arrange(voteCount) %>% 
+  select(title, voteCount) %>% 
+  head(1)
+print(menos_votos)
+
+# -------------------------------
+# EJERCICIO 4.5
+# -------------------------------
+
+cat("\n--------- 20 Películas Más Recientes ---------\n")
+datos$releaseDate <- as.Date(datos$releaseDate)
+top_20_recientes <- datos[order(datos$releaseDate, decreasing = TRUE), c("title", "releaseDate")][1:20, ]
+print(top_20_recientes)
