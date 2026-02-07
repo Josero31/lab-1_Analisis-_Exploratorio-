@@ -642,6 +642,8 @@ if(length(directores_top) > 0) {
 
 ## 4.11 ¿Cómo se correlacionan los presupuestos con los ingresos?
 Los presupuestos tienen una corelación significativa con los ingresos
+
+Explicacion: Tanto la correlacion calculada como la gráfica muestran una tendencia clara entre el presupuesto y la rentabilidad de una pelicula
 ```{r}
 # Correlación
 cor_budget_revenue <- cor(datos$budget, datos$revenue, use = "complete.obs")
@@ -666,6 +668,8 @@ ggplot(datos, aes(x = budget, y = revenue)) +
 
 ## 4.12 ¿Se asocian ciertos meses con mejores ingresos?
 Algunos meses tienden a tener mejores ingresos que otros, en Particular Junio, Mayo y Julio
+
+Explicación: Las graficas de cajas estan un poco más arriba del resto durante estos meses y tienen promedios mas altos
 ```{r}
 datos <- datos %>%
   mutate(
@@ -685,6 +689,8 @@ ggplot(datos, aes(x = releaseMonth, y = revenue)) +
 
 ## 4.13 Mejores meses y cantidad promedio de películas
 Los meses de Diciembre, Noviembre y Enero lanzan la mayor cantidad de películas en promedio, pero los meses más rentables en promedio son Junio, Mayo y Julio
+
+Explicación: las graficas de barras muestran una diferencia significativa en estos meses, tanto en la cantidad y en la rentabilidad
 ```{r}
 resumen_mensual <- datos %>%
   group_by(releaseMonth) %>%
@@ -705,7 +711,9 @@ ggplot(resumen_mensual, aes(x = releaseMonth, y = ingreso_promedio)) +
 ```
 
 ## 4.14 ¿Cómo se correlacionan las calificaciones con los ingresos?
-Las calificaciones tienen una leve correlación significativa con los ingresos
+Las calificaciones parecen tener una leve correlación con los ingresos
+
+Explicación: la regresión y la distribución muestran un pequeño sesgo a favor del ingreso cuando hay mejores calificaciones, aunque no es tan significativa
 ```{r}
 cor_votos_ingresos <- cor(datos$voteAvg, datos$revenue, use = "complete.obs")
 cor_votos_ingresos
@@ -722,6 +730,8 @@ ggplot(datos, aes(x = voteAvg, y = revenue)) +
 
 ## 4.15 Videos promocionales y páginas oficiales
 La presencia de páginas promocionales se relaciona mejor con un alto ingreso promedio comparado con los videos promocionales
+
+Explicacion: Las proporciones de los ingresos en comparación favorecen las páginas por encima de los videos promocionales
 ```{r}
 datos %>%
   group_by(video) %>%
@@ -745,6 +755,8 @@ datos %>%
 
 ## 4.16 Popularidad del elenco vs taquilla
 La popularidad promedio del elenco parece tener poca relación con el éxito de la taquilla
+
+Explicación: Ni la correlación ni la gráfica muestran una tendencia clara en favor del ingreso a medida que la popularidad promedio del elenco aumenta
 ```{r}
 datos$actorsPopularityMean <- sapply(datos$actorsPopularity, function(x) {
   if (is.na(x) | x == "") return(NA)
@@ -761,6 +773,186 @@ ggplot(datos, aes(x = actorsPopularityMean, y = revenue)) +
     y = "Ingresos"
   ) +
   theme_minimal()
+
+```
+
+# PREGUNTAS EXTRAS
+
+## ¿Qué tan eficiente es cada género en términos de retorno de inversión (ROI)?
+Horror y Comedy son las más rentables
+Explicación: son las que tienen el ingreso más alto relativo a su presupuesto, posiblemente sean los géneros más faciles de gustar a la audiencia
+```{r}
+# Calcular ROI
+movies$ROI <- (movies$revenue - movies$budget) / movies$budget
+
+roi_genero <- movies %>%
+  filter(budget > 0, revenue > 0, !is.na(genero_principal)) %>%
+  group_by(genero_principal) %>%
+  summarise(
+    ROI_promedio = mean(ROI, na.rm = TRUE),
+    peliculas = n()
+  ) %>%
+  filter(peliculas >= 10) %>%
+  arrange(desc(ROI_promedio))
+
+knitr::kable(head(roi_genero, 10),
+             caption = "Top 10 Géneros con Mayor Retorno de Inversión (ROI)")
+ggplot(head(roi_genero, 10),
+       aes(x = reorder(genero_principal, ROI_promedio),
+           y = ROI_promedio)) +
+  geom_col(fill = "darkred", alpha = 0.8) +
+  coord_flip() +
+  labs(
+    title = "Top 10 Géneros Más Eficientes (ROI)",
+    x = "Género",
+    y = "ROI Promedio"
+  )
+
+```
+
+## ¿Las películas más largas son realmente mejor calificadas?
+No parece haber una relación claramente significativa con la duración y la calificación
+Explicación: El valor de correlación es bajo y la gráfica no muestra una tendencia visible, parece más bien que son otros factores los que afectan estas variables
+```{r}
+cor_runtime_rating <- cor(movies$runtime, movies$voteAvg,
+                          use = "complete.obs")
+
+cor_runtime_rating
+ggplot(movies, aes(x = runtime, y = voteAvg)) +
+  geom_point(alpha = 0.4, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = paste("Duración vs Calificación Promedio\nCorrelación:",
+                  round(cor_runtime_rating, 3)),
+    x = "Duración (minutos)",
+    y = "Calificación Promedio"
+  )
+
+```
+
+## ¿Influye el idioma original en los ingresos y la popularidad?
+Algunos idiomas como en, zh, y cn, son consistentemente más rentables y populares que el resto.
+Explicación: despues de calcular el ingreso y popularidad promedio distribuido por idioma se notan diferencias claras y significativas entre idiomas originales. 
+```{r}
+idioma_stats <- movies %>%
+  filter(originalLanguage != "") %>%
+  group_by(originalLanguage) %>%
+  summarise(
+    ingreso_promedio = mean(revenue, na.rm = TRUE),
+    popularidad_promedio = mean(popularity, na.rm = TRUE),
+    peliculas = n()
+  ) %>%
+  filter(peliculas >= 20) %>%
+  arrange(desc(ingreso_promedio))
+
+knitr::kable(head(idioma_stats, 10),
+             caption = "Idiomas con Mayores Ingresos Promedio")
+ggplot(head(idioma_stats, 10),
+       aes(x = reorder(originalLanguage, ingreso_promedio),
+           y = ingreso_promedio / 1e6)) +
+  geom_col(fill = "darkgreen", alpha = 0.8) +
+  coord_flip() +
+  labs(
+    title = "Ingresos Promedio por Idioma Original",
+    x = "Idioma",
+    y = "Ingreso Promedio (Millones USD)"
+  )
+
+```
+
+## ¿Las productoras más frecuentes son también las más rentables?
+La cantidad de producciones no esta relacionada con la rentabilidad promedio por película
+Explicación: la correlación calculada es mínima y la gráfica no muestra una tendencia clara a favor de una correlación
+```{r}
+# Extraer productora principal
+movies$productora_principal <- datos$productionCompany
+
+productoras_stats <- movies %>%
+  filter(productora_principal != "", !is.na(productora_principal)) %>%
+  group_by(productora_principal) %>%
+  summarise(
+    peliculas = n(),
+    ingreso_promedio = mean(revenue, na.rm = TRUE)
+  ) %>%
+  filter(peliculas >= 10) %>%
+  arrange(desc(peliculas))
+
+knitr::kable(head(productoras_stats, 10),
+             caption = "Productoras Más Frecuentes")
+ggplot(head(productoras_stats, 10),
+       aes(x = reorder(productora_principal, peliculas),
+           y = peliculas)) +
+  geom_col(fill = "purple", alpha = 0.8) +
+  coord_flip() +
+  labs(
+    title = "Top 10 Productoras por Cantidad de Películas",
+    x = "Productora",
+    y = "Cantidad de Películas"
+  )
+
+cor_scale = cor(productoras_stats$peliculas,
+    productoras_stats$ingreso_promedio,
+    use = "complete.obs")
+
+cor_scale
+ggplot(productoras_stats, aes(x = peliculas,
+           y = ingreso_promedio))  +
+  geom_point(alpha = 0.4, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(
+    title = paste("N. Producciones vs Ingreso Promedio\nCorrelación:",
+                  round(cor_scale, 3)),
+    x = "cantidad por productora",
+    y = "Ingreso promedio por película"
+  )
+
+
+```
+
+## ¿Cómo se relaciona la cantidad de votos con la calificación promedio?
+No hay evidencia de que la cantidad de votos con la calificación promedio tengan correlación significativa entre sí. 
+Explicación: el índice es muy bajo y la gráfica muestra una distribución relativamente uniforme
+```{r}
+cor_votos_rating <- cor(movies$voteCount, movies$voteAvg,
+                        use = "complete.obs")
+
+cor_votos_rating
+ggplot(movies, aes(x = voteCount, y = voteAvg)) +
+  geom_point(alpha = 0.4, color = "orange") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  scale_x_log10() +
+  labs(
+    title = paste("Cantidad de Votos vs Calificación\nCorrelación:",
+                  round(cor_votos_rating, 3)),
+    x = "Cantidad de Votos (escala log)",
+    y = "Calificación Promedio"
+  )
+
+```
+
+## ¿Existen diferencias significativas entre películas con y sin página oficial?
+Sí, en promedio tiene mayor ingreso y popularidad las películas con página oficial
+Explicación: Las proporciones del ingreso y popularidad promedio son de casi el doble en comparación.
+```{r}
+movies$tiene_homepage <- ifelse(movies$homePage == "", "No", "Sí")
+
+homepage_stats <- movies %>%
+  group_by(tiene_homepage) %>%
+  summarise(
+    ingreso_promedio = mean(revenue, na.rm = TRUE),
+    popularidad_promedio = mean(popularity, na.rm = TRUE),
+    calificacion_promedio = mean(voteAvg, na.rm = TRUE)
+  )
+
+knitr::kable(homepage_stats,
+             caption = "Impacto de la Página Oficial en el Desempeño")
+ggplot(movies, aes(x = tiene_homepage, y = revenue)) +
+  geom_boxplot(fill = "cyan", alpha = 0.7) +
+  labs(
+    title = "Ingresos según Presencia de Página Oficial",
+    x = "Página Oficial",
+    y = "Ingresos"
+  )
 
 ```
 
