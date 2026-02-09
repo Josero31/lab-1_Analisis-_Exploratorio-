@@ -208,29 +208,6 @@ knitr::kable(faltantes, caption = "Analisis de Valores Faltantes")
 
 ---
 
-# Resumen Final
-
-```{r resumen-final}
-cat("===============================================================\n")
-cat("                    RESUMEN DEL DATASET                        \n")
-cat("===============================================================\n")
-cat("  Dataset: movies_2026.csv\n")
-cat(paste("  Total de observaciones:", nrow(datos), "\n"))
-cat(paste("  Total de variables:", ncol(datos), "\n"))
-cat(paste("  Variables numericas:", sum(sapply(datos, is.numeric)), "\n"))
-cat(paste("  Variables categoricas:", sum(sapply(datos, is.character)), "\n"))
-cat(paste("  Variables logicas:", sum(sapply(datos, is.logical)), "\n"))
-cat(paste("  Total valores faltantes:", sum(is.na(datos)), "\n"))
-cat("===============================================================\n")
-```
-
----
-
-<div class="info-box" style="text-align: center;">
-<h3 style="color: white; margin: 0;">Analisis Exploratorio Completado</h3>
-<p style="margin-bottom: 0;">Documento generado con R Markdown</p>
-</div>
-
 # Ejercicio 3  
 
 ### Variables cuantitativas
@@ -241,7 +218,7 @@ Se analizaron las variables **budget, revenue, runtime, popularity y voteAvg** m
 library(tidyverse)
 library(nortest)
 
-datos <- read.csv("Data.csv")
+# Usar el objeto datos ya cargado
 
 vars_cuant <- c("budget", "revenue", "runtime", "popularity", "voteAvg")
 
@@ -374,8 +351,8 @@ library(lubridate)
 library(dplyr)
 library(ggplot2)
 
-# Extraer genero principal
-movies <- read.csv("movies_2026.csv", stringsAsFactors = FALSE, fileEncoding = "UTF-8")
+# Extraer genero principal (usar el objeto datos ya cargado)
+movies <- datos
 movies$genero_principal <- sapply(strsplit(movies$genres, "\\|"), 
                                   function(x) ifelse(length(x) > 0 && x[1] != "", x[1], NA))
 
@@ -755,15 +732,10 @@ if(length(directores_top) > 0) {
 }
 ```
 
-<<<<<<< Updated upstream
 ## 4.11 ¿Cómo se correlacionan los presupuestos con los ingresos?
-Los presupuestos tienen una corelación significativa con los ingresos
+Los presupuestos tienen una correlación significativa con los ingresos
 
-Explicacion: Tanto la correlacion calculada como la gráfica muestran una tendencia clara entre el presupuesto y la rentabilidad de una pelicula
-=======
-## 4.11 Como se correlacionan los presupuestos con los ingresos?
-Los presupuestos tienen una corelacion significativa con los ingresos
->>>>>>> Stashed changes
+Explicación: Tanto la correlación calculada como la gráfica muestran una tendencia clara entre el presupuesto y la rentabilidad de una película
 ```{r}
 # Correlacion
 cor_budget_revenue <- cor(datos$budget, datos$revenue, use = "complete.obs")
@@ -807,15 +779,10 @@ ggplot(datos, aes(x = releaseMonth, y = revenue)) +
 
 ```
 
-<<<<<<< Updated upstream
 ## 4.13 Mejores meses y cantidad promedio de películas
 Los meses de Diciembre, Noviembre y Enero lanzan la mayor cantidad de películas en promedio, pero los meses más rentables en promedio son Junio, Mayo y Julio
 
-Explicación: las graficas de barras muestran una diferencia significativa en estos meses, tanto en la cantidad y en la rentabilidad
-=======
-## 4.13 Mejores meses y cantidad promedio de peliculas
-Los meses de Diciembre, Noviembre y Enero lanzan la mayor cantidad de peliculas en promedio, pero los meses mas rentables en promedio son Junio, Mayo y Julio
->>>>>>> Stashed changes
+Explicación: las gráficas de barras muestran una diferencia significativa en estos meses, tanto en la cantidad y en la rentabilidad
 ```{r}
 resumen_mensual <- datos %>%
   group_by(releaseMonth) %>%
@@ -835,15 +802,10 @@ ggplot(resumen_mensual, aes(x = releaseMonth, y = ingreso_promedio)) +
 
 ```
 
-<<<<<<< Updated upstream
 ## 4.14 ¿Cómo se correlacionan las calificaciones con los ingresos?
 Las calificaciones parecen tener una leve correlación con los ingresos
 
 Explicación: la regresión y la distribución muestran un pequeño sesgo a favor del ingreso cuando hay mejores calificaciones, aunque no es tan significativa
-=======
-## 4.14 Como se correlacionan las calificaciones con los ingresos?
-Las calificaciones tienen una leve correlacion significativa con los ingresos
->>>>>>> Stashed changes
 ```{r}
 cor_votos_ingresos <- cor(datos$voteAvg, datos$revenue, use = "complete.obs")
 cor_votos_ingresos
@@ -858,15 +820,10 @@ ggplot(datos, aes(x = voteAvg, y = revenue)) +
 
 ```
 
-<<<<<<< Updated upstream
 ## 4.15 Videos promocionales y páginas oficiales
 La presencia de páginas promocionales se relaciona mejor con un alto ingreso promedio comparado con los videos promocionales
 
-Explicacion: Las proporciones de los ingresos en comparación favorecen las páginas por encima de los videos promocionales
-=======
-## 4.15 Videos promocionales y paginas oficiales
-La presencia de paginas promocionales se relaciona mejor con un alto ingreso promedio comparado con los videos promocionales
->>>>>>> Stashed changes
+Explicación: Las proporciones de los ingresos en comparación favorecen las páginas por encima de los videos promocionales
 ```{r}
 datos %>%
   group_by(video) %>%
@@ -889,13 +846,9 @@ datos %>%
 ```
 
 ## 4.16 Popularidad del elenco vs taquilla
-<<<<<<< Updated upstream
 La popularidad promedio del elenco parece tener poca relación con el éxito de la taquilla
 
 Explicación: Ni la correlación ni la gráfica muestran una tendencia clara en favor del ingreso a medida que la popularidad promedio del elenco aumenta
-=======
-La popularidad promedio del elenco parece tener poca relacion con el exito de la taquilla
->>>>>>> Stashed changes
 ```{r}
 datos$actorsPopularityMean <- sapply(datos$actorsPopularity, function(x) {
   if (is.na(x) | x == "") return(NA)
@@ -1101,7 +1054,30 @@ ggplot(movies, aes(x = tiene_homepage, y = revenue)) +
 
 ---
 
+# Resumen Final
 
+```{r resumen-final}
+cat("===============================================================\n")
+cat("                    RESUMEN DEL DATASET                        \n")
+cat("===============================================================\n")
+cat("  Dataset: movies_2026.csv\n")
+cat(paste("  Total de observaciones:", nrow(datos), "\n"))
+cat(paste("  Total de variables:", ncol(datos), "\n"))
+cat(paste("  Variables numericas:", sum(sapply(datos, is.numeric)), "\n"))
+cat(paste("  Variables categoricas:", sum(sapply(datos, is.character)), "\n"))
+cat(paste("  Variables logicas:", sum(sapply(datos, is.logical)), "\n"))
+cat(paste("  Total valores faltantes:", sum(is.na(datos)), "\n"))
+cat("===============================================================\n")
+```
+
+---
+
+<div class="info-box" style="text-align: center;">
+<h3 style="color: white; margin: 0;">Analisis Exploratorio Completado</h3>
+<p style="margin-bottom: 0;">Documento generado con R Markdown</p>
+</div>
+
+---
 
 <center>
 *Desarrollado por Josero31 | 2026*
